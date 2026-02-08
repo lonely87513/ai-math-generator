@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 AI 數學小天才</title>
+    <title>🎮 AI 數學小天才 - 算式篇</title>
     <style>
         * {
             margin: 0;
@@ -12,161 +12,252 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Microsoft YaHei', sans-serif;
+            font-family: 'Microsoft YaHei', 'Comic Sans MS', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            padding: 10px;
         }
 
         .container {
             background: white;
             border-radius: 30px;
-            padding: 40px;
+            padding: 25px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
-            width: 90%;
+            max-width: 700px;
+            width: 100%;
             text-align: center;
-            position: relative;
         }
 
         h1 {
             color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-size: 2em;
+            margin-bottom: 5px;
         }
 
         .subtitle {
-            color: #666;
-            margin-bottom: 30px;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 0.9em;
         }
 
-        /* Stats Bar */
+        /* Stats */
         .stats {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 30px;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 20px;
-            padding: 15px;
+            border-radius: 15px;
+            padding: 12px;
             color: white;
-        }
-
-        .stat {
-            text-align: center;
+            margin-bottom: 15px;
         }
 
         .stat-value {
-            font-size: 2em;
+            font-size: 1.5em;
             font-weight: bold;
         }
 
         .stat-label {
-            font-size: 0.9em;
+            font-size: 0.8em;
         }
 
-        /* Timer */
-        .timer {
-            font-size: 3em;
-            color: #f5576c;
-            margin: 20px 0;
-            animation: pulse 1s infinite;
+        /* Progress */
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 12px;
+            margin: 15px 0;
+            overflow: hidden;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            border-radius: 10px;
+            transition: width 0.3s;
         }
 
-        /* Question Box */
+        /* Question */
         .question-box {
-            background: #f8f9fa;
-            border: 2px dashed #667eea;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
+            background: linear-gradient(135deg, #e8f4fd 0%, #d4e8f7 100%);
+            border: 3px solid #667eea;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 1.2em;
             color: #333;
+            line-height: 1.6;
+        }
+
+        /* Drag Elements */
+        .elements-area {
+            background: #f8f9fa;
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .elements-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .elements-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 60px;
+            padding: 10px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .drag-element {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
             font-size: 1.3em;
-            min-height: 100px;
+            font-weight: bold;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .drag-element:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .drag-element.number {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        }
+
+        .drag-element.operator {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        .drag-element.parenthesis {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        }
+
+        .drag-element.distractor {
+            background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+            opacity: 0.7;
+        }
+
+        .drag-element.used {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Expression Workspace */
+        .workspace-area {
+            background: #fffde7;
+            border: 3px solid #ffc107;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 80px;
+        }
+
+        .workspace-label {
+            font-size: 0.85em;
+            color: #ff8f00;
+            margin-bottom: 10px;
+        }
+
+        .workspace {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            min-height: 50px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            align-items: center;
+        }
+
+        .workspace-slot {
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
+            background: #f5f5f5;
         }
 
-        /* Answer Input */
-        .answer-section {
-            margin: 30px 0;
+        .workspace-element {
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .answer-input {
-            font-size: 2em;
-            padding: 15px 30px;
-            border: 4px solid #667eea;
-            border-radius: 15px;
-            width: 200px;
-            text-align: center;
-            outline: none;
-            transition: all 0.3s;
+        .workspace-element .remove-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .answer-input:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 20px rgba(118, 75, 162, 0.3);
-        }
-
-        .answer-input.correct {
-            border-color: #4CAF50;
-            background: #e8f5e9;
-            animation: correctAnim 0.5s;
-        }
-
-        .answer-input.wrong {
-            border-color: #f44336;
-            background: #ffebee;
-            animation: shake 0.5s;
-        }
-
-        @keyframes correctAnim {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+        .workspace-element .remove-btn:hover {
+            background: rgba(255,255,255,0.5);
         }
 
         /* Buttons */
+        .btn-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
         .btn {
-            padding: 15px 40px;
-            font-size: 1.2em;
+            padding: 12px 25px;
+            font-size: 1em;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-weight: bold;
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-        }
-
-        .btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            opacity: 0.6;
         }
 
         .btn-success {
@@ -175,14 +266,8 @@
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
             color: white;
-        }
-
-        .btn-warning:disabled {
-            background: #ddd;
-            cursor: not-allowed;
-            opacity: 0.6;
         }
 
         .btn-secondary {
@@ -190,341 +275,189 @@
             color: white;
         }
 
-        /* Mode Selection */
-        .mode-select {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .mode-btn {
-            padding: 10px 20px;
-            border: 3px solid #667eea;
-            border-radius: 20px;
-            background: white;
-            color: #667eea;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .mode-btn.active {
-            background: #667eea;
-            color: white;
-        }
-
-        .mode-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 20px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
-            border-radius: 10px;
-            transition: width 0.5s;
-        }
-
-        /* Streak Badge */
-        .streak {
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            transform: rotate(15deg);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        /* Stars */
-        .stars {
-            font-size: 2em;
+        /* Hint Area */
+        .hint-area {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 2px solid #2196F3;
+            border-radius: 12px;
+            padding: 12px;
             margin: 10px 0;
-        }
-
-        /* Particles */
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            animation: fall 1s forwards;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
-        /* Result Screen */
-        .result {
             display: none;
         }
 
-        .result.show {
+        .hint-area.show {
             display: block;
         }
 
-        .score-final {
+        .hint-title {
+            color: #1976D2;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint-content {
+            color: #333;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        /* Start Screen */
+        #startScreen {
+            padding: 30px;
+        }
+
+        #gameScreen {
+            display: none;
+        }
+
+        /* Result Animation */
+        .result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .result-overlay.show {
+            display: flex;
+        }
+
+        .result-box {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .result-emoji {
             font-size: 4em;
+            margin: 10px 0;
+        }
+
+        .result-score {
+            font-size: 3em;
             color: #667eea;
-            margin: 20px 0;
+            font-weight: bold;
         }
 
-        .feedback {
-            font-size: 1.5em;
-            margin: 20px 0;
+        /* Drop Zone Highlight */
+        .workspace.drag-over {
+            background: #fff9c4;
+            border-color: #ffc107;
         }
 
-        /* Hidden */
-        .hidden {
-            display: none !important;
+        /* Instructions */
+        .instructions {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            color: #e65100;
         }
 
-        /* Sound Toggle */
-        .sound-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            .stats {
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 1.2em;
+            }
+            
+            .question-box {
+                font-size: 1em;
+                padding: 15px;
+            }
+            
+            .drag-element {
+                padding: 10px 15px;
+                font-size: 1.1em;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
         }
-    
-/* ==================== 手機響應式設計 ==================== */
-@media (max-width: 480px) {
-    .container {
-        padding: 20px 15px;
-        width: 95%;
-        border-radius: 20px;
-    }
-    
-    h1 {
-        font-size: 1.8em;
-        margin-bottom: 8px;
-    }
-    
-    .subtitle {
-        font-size: 0.9em;
-        margin-bottom: 20px;
-    }
-    
-    .stats {
-        padding: 10px;
-        border-radius: 15px;
-    }
-    
-    .stat-value {
-        font-size: 1.5em;
-    }
-    
-    .stat-label {
-        font-size: 0.75em;
-    }
-    
-    .timer {
-        font-size: 2.2em;
-        margin: 15px 0;
-    }
-    
-    .question-box {
-        font-size: 1.1em;
-        padding: 20px 15px;
-        min-height: 100px;
-        border-radius: 15px;
-    }
-    
-    .answer-input {
-        font-size: 1.5em;
-        padding: 12px 20px;
-        width: 150px;
-        border-radius: 12px;
-    }
-    
-    .btn {
-        padding: 12px 25px;
-        font-size: 1em;
-        margin: 8px;
-        border-radius: 25px;
-    }
-    
-    .mode-select {
-        gap: 8px;
-    }
-    
-    .mode-btn {
-        padding: 8px 15px;
-        font-size: 0.9em;
-        border-radius: 15px;
-    }
-    
-    .streak {
-        padding: 8px 15px;
-        font-size: 0.9em;
-    }
-    
-    .score-final {
-        font-size: 3em;
-    }
-    
-    .feedback {
-        font-size: 1.2em;
-    }
-}
 
-@media (max-width: 360px) {
-    h1 {
-        font-size: 1.5em;
-    }
-    
-    .stats {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .stat {
-        flex: 1 1 30%;
-    }
-    
-    .question-box {
-        font-size: 1em;
-        padding: 15px 10px;
-    }
-    
-    .answer-input {
-        width: 120px;
-        font-size: 1.3em;
-    }
-    
-    .mode-btn {
-        padding: 6px 12px;
-        font-size: 0.85em;
-    }
-}
-
-/* ==================== 平板響應式 ==================== */
-@media (min-width: 481px) and (max-width: 768px) {
-    .container {
-        padding: 30px 25px;
-    }
-    
-    h1 {
-        font-size: 2.2em;
-    }
-    
-    .question-box {
-        font-size: 1.3em;
-    }
-    
-    .answer-input {
-        font-size: 1.8em;
-    }
-}
-
-/* ==================== 觸控優化 ==================== */
-@media (hover: none) and (pointer: coarse) {
-    .btn:hover {
-        transform: none;
-    }
-    
-    .btn:active {
-        transform: scale(0.95);
-    }
-    
-    .mode-btn:hover {
-        background: white;
-        color: #667eea;
-    }
-    
-    .mode-btn:active {
-        background: #667eea;
-        color: white;
-    }
-    
-    .answer-input:focus {
-        box-shadow: 0 0 15px rgba(118, 75, 162, 0.3);
-    }
-}
-
-/* ==================== 防止選取文字 ==================== */
-input, button {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-/* ==================== 輸入框數字鍵盤 ==================== */
-input[type="number"] {
-    -moz-appearance: textfield;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* ==================== 防止水平滾動 ==================== */
-html, body {
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-}
-
-</style>
+        /* Prevent text selection */
+        .drag-element, .workspace-element, .btn {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <button class="sound-toggle" onclick="toggleSound()">🔊</button>
-        
-        <!-- Main Game -->
-        <div id="game">
+        <!-- Start Screen -->
+        <div id="startScreen">
             <h1>🎮 AI 數學小天才</h1>
-            <p class="subtitle">挑戰自己，成為數學之星！</p>
+            <p class="subtitle">拖曳數字同運算符號，組成正確既算式！</p>
+            
+            <div class="instructions">
+                📖 <strong>點玩：</strong><br>
+                1. 睇清楚題目<br>
+                2. 拖曳啱啱數字同符號落去工作區<br>
+                3. 組成算式後按「✅ 確認」<br>
+                4. 唔識可以按「💡 提示」
+            </div>
+            
+            <button class="btn btn-primary" style="font-size: 1.2em; padding: 15px 40px;" onclick="startGame()">
+                🚀 開始挑戰
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen">
+            <h1>🎮 數學大冒險</h1>
+            <p class="subtitle">組成正確既算式！</p>
 
             <!-- Stats -->
             <div class="stats">
-                <div class="stat">
+                <div>
                     <div class="stat-value" id="score">0</div>
                     <div class="stat-label">分數</div>
                 </div>
-                <div class="stat">
+                <div>
+                    <div class="stat-value" id="questionNum">1/10</div>
+                    <div class="stat-label">題目</div>
+                </div>
+                <div>
                     <div class="stat-value" id="streak">0</div>
-                    <div class="stat-label">連續</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="stars">⭐</div>
-                    <div class="stat-label">星星</div>
+                    <div class="stat-label">連勝</div>
                 </div>
             </div>
-
-            <!-- Mode Selection -->
-            <div class="mode-select">
-                <button class="mode-btn active" onclick="setMode('add')">➕ 加法</button>
-                <button class="mode-btn" onclick="setMode('sub')">➖ 減法</button>
-                <button class="mode-btn" onclick="setMode('mul')">✖️ 乘法</button>
-                <button class="mode-btn" onclick="setMode('div')">➗ 除法</button>
-                <button class="mode-btn" onclick="setMode('mixed')">🎲 混合</button>
-            </div>
-
-            <!-- Timer -->
-            <div class="timer" id="timer">60</div>
 
             <!-- Progress -->
-            <div class="progress-container">
-                <div class="progress-bar" id="progress" style="width: 0%"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
 
             <!-- Question -->
@@ -532,218 +465,174 @@ html, body {
                 準備好未？
             </div>
 
-            <!-- Answer -->
-            <div class="answer-section">
-                <input type="number" class="answer-input" id="answer" placeholder="答案" onkeypress="checkEnter(event)">
+            <!-- Elements to Drag -->
+            <div class="elements-area">
+                <div class="elements-label">📦 拖曳以下元素去組成算式：</div>
+                <div class="elements-container" id="elementsContainer">
+                    <!-- Elements will be generated here -->
+                </div>
+            </div>
+
+            <!-- Workspace -->
+            <div class="workspace-area">
+                <div class="workspace-label">🔧 工作區（拖曳元素落去）：</div>
+                <div class="workspace" id="workspace" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                    <span style="color: #999;" id="workspaceHint">未有任何元素</span>
+                </div>
+            </div>
+
+            <!-- Hint Area -->
+            <div class="hint-area" id="hintArea">
+                <div class="hint-title">💡 提示</div>
+                <div class="hint-content" id="hintContent"></div>
             </div>
 
             <!-- Buttons -->
-            <button class="btn btn-primary" id="startBtn" onclick="startGame()">🚀 開始挑戰</button>
-            <button class="btn btn-warning" id="nextBtn" onclick="nextQuestion()">下一題</button>
-            <button class="btn btn-secondary" id="restartBtn" onclick="startGame()" style="display:none;">🔄 重新開始</button>
-        </div>
-
-        <!-- Result Screen -->
-        <div id="result" class="result">
-            <h1>🎉 完成！</h1>
-            <div class="score-final" id="finalScore">0</div>
-            <div class="feedback" id="feedback">勁揪！</div>
-            <div class="stars" id="resultStars"></div>
-            <button class="btn btn-success" onclick="startGame()">🔄 再玩一次</button>
+            <div class="btn-row">
+                <button class="btn btn-success" onclick="checkExpression()" style="font-size: 1.1em; padding: 15px 35px;">
+                    ✅ 確認算式
+                </button>
+                <button class="btn btn-warning" onclick="showHint()">
+                    💡 提示
+                </button>
+                <button class="btn btn-secondary" onclick="clearWorkspace()">
+                    🗑️ 清空
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Audio Context for Sounds -->
+    <!-- Result Overlay -->
+    <div class="result-overlay" id="resultOverlay">
+        <div class="result-box">
+            <div class="result-emoji" id="resultEmoji">🎉</div>
+            <div class="result-score" id="resultScore">100</div>
+            <p style="color: #666; margin: 10px 0;" id="resultText">勁揪！</p>
+            <button class="btn btn-primary" onclick="nextQuestion()">下一題 ➡️</button>
+        </div>
+    </div>
+
     <script>
         // ==================== CONFIG ====================
-        const GAME_CONFIG = {
-            timeLimit: 60,
-            maxQuestions: 10,
+        const CONFIG = {
+            totalQuestions: 10,
             pointsPerCorrect: 100,
-            streakBonus: 50,
-            maxStreakBonus: 5
+            streakBonus: 20,
+            maxStreak: 5
         };
 
         // ==================== STATE ====================
         let state = {
             score: 0,
             streak: 0,
-            stars: 0,
-            currentQuestion: null,
-            timeLeft: GAME_CONFIG.timeLimit,
-            timer: null,
-            gameActive: false,
-            questionsAnswered: 0,
-            correctAnswers: 0,
-            currentMode: 'add',
-            soundEnabled: true
+            currentQuestion: 0,
+            currentProblem: null,
+            workspace: [],
+            availableElements: [],
+            gameActive: false
         };
 
-        // ==================== PROBLEM BANK ====================
-        let problemBank = {};
-
-        // ==================== AUDIO ====================
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx = null;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContext();
-            }
-        }
-
-        function playSound(type) {
-            if (!state.soundEnabled || !audioCtx) return;
+        // ==================== PROBLEM GENERATOR ====================
+        function generateProblem() {
+            const types = ['add', 'sub', 'mul'];
+            const type = types[Math.floor(Math.random() * types.length)];
             
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            switch(type) {
-                case 'correct':
-                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
-                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.4);
-                    break;
-                case 'wrong':
-                    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-                    osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.1);
-                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.3);
-                    break;
-                case 'win':
-                    osc.type = 'triangle';
-                    for (let i = 0; i < 3; i++) {
-                        const freq = 523.25 * Math.pow(1.059, i * 12);
-                        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.15);
-                    }
-                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-                    osc.start(audioCtx.currentTime);
-                    osc.stop(audioCtx.currentTime + 0.6);
-                    break;
-            }
-        }
-
-        function toggleSound() {
-            state.soundEnabled = !state.soundEnabled;
-            document.querySelector('.sound-toggle').textContent = state.soundEnabled ? '🔊' : '🔇';
-        }
-
-        // ==================== PARTICLES ====================
-        function createParticles(type) {
-            const colors = type === 'correct' 
-                ? ['#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B']
-                : ['#f44336', '#FF5722', '#795548', '#607D8B'];
+            let problem = {};
             
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * window.innerWidth + 'px';
-                particle.style.top = '50%';
-                particle.style.width = (Math.random() * 15 + 5) + 'px';
-                particle.style.height = particle.style.width;
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-                particle.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
-                document.body.appendChild(particle);
+            if (type === 'add') {
+                // 加法問題
+                const a = getRandom(10, 50);
+                const b = getRandom(5, 30);
+                const result = a + b;
+                problem = {
+                    type: 'add',
+                    question: `小明有 ${a} 粒糖，媽媽再比 ${b} 粒佢，總共有幾多粒？`,
+                    correctExpression: `${a}+${b}`,
+                    expectedResult: result,
+                    hint: `題目話佢有 ${a} 粒糖，再加 ${b} 粒`,
+                    elements: generateElements(a, b, null, '+', 'add', true),
+                    numbers: [a, b],
+                    operator: '+'
+                };
+            } else if (type === 'sub') {
+                // 減法問題
+                const a = getRandom(30, 80);
+                const b = getRandom(10, 40);
+                const result = Math.max(a, b) - Math.min(a, b);
+                const firstNum = Math.max(a, b);
+                const secondNum = Math.min(a, b);
+                problem = {
+                    type: 'sub',
+                    question: `有 ${firstNum} 粒糖，用咗 ${secondNum} 粒，仲剩幾多粒？`,
+                    correctExpression: `${firstNum}-${secondNum}`,
+                    expectedResult: result,
+                    hint: `由 ${firstNum} 粒入面扣走 ${secondNum} 粒`,
+                    elements: generateElements(firstNum, secondNum, null, '-', 'sub', true),
+                    numbers: [firstNum, secondNum],
+                    operator: '-'
+                };
+            } else {
+                // 乘法問題 (簡單)
+                const a = getRandom(2, 9);
+                const b = getRandom(3, 8);
+                const result = a * b;
+                problem = {
+                    type: 'mul',
+                    question: `每盒有 ${a} 支鉛筆，有 ${b} 盒，總共有幾多支？`,
+                    correctExpression: `${a}×${b}`,
+                    expectedResult: result,
+                    hint: `${a} 支筆 ${b} 盒，即係要「${a} × ${b}」`,
+                    elements: generateElements(a, b, null, '×', 'mul', true),
+                    numbers: [a, b],
+                    operator: '×'
+                };
+            }
+            
+            return problem;
+        }
+
+        function generateElements(num1, num2, num3, operator, type, includeCorrect) {
+            const elements = [];
+            
+            // 加入正確的元素
+            if (includeCorrect) {
+                elements.push({ type: 'number', value: num1, label: num1.toString(), correct: true });
+                elements.push({ type: 'number', value: num2, label: num2.toString(), correct: true });
+                elements.push({ type: 'operator', value: operator, label: operator, correct: true });
                 
-                setTimeout(() => particle.remove(), 1000);
-            }
-        }
-
-        // ==================== LOAD PROBLEM BANK ====================
-        async function loadProblemBank() {
-            try {
-                const response = await fetch('problem-bank.json');
-                problemBank = await response.json();
-                console.log('題庫載入成功！');
-            } catch (error) {
-                console.error('載入題庫失敗:', error);
-                // Use embedded backup
-                problemBank = getEmbeddedBank();
-            }
-        }
-
-        function getEmbeddedBank() {
-            return {
-                "grade_3": {
-                    "addition": [
-                        { template: "小明有{N1}粒糖，媽媽再比{N2}粒佢，總共有幾多粒？", range_N1: [1, 50], range_N2: [1, 30], answer: "N1 + N2", context: "糖果" },
-                        { template: "圖書館有{N1}本故事書，又入咗{N2}本新書，總共有幾多本？", range_N1: [100, 300], range_N2: [50, 100], answer: "N1 + N2", context: "圖書館" },
-                        { template: "第一站有{N1}人上車，第二站有{N2}人上車，車廂裏而有幾多人？", range_N1: [10, 30], range_N2: [10, 30], answer: "N1 + N2", context: "巴士" }
-                    ],
-                    "subtraction": [
-                        { template: "有{N1}粒糖，用咗{N2}粒，仲剩幾多粒？", range_N1: [20, 60], range_N2: [5, 30], answer: "N1 - N2", context: "糖果" },
-                        { template: "氣球展有{N1}個氣球，賣咗{N2}個，仲剩幾多個？", range_N1: [30, 80], range_N2: [10, 40], answer: "N1 - N2", context: "氣球" },
-                        { template: "小明有{N1}粒糖，分咗{N2}粒比朋友，自己剩幾多粒？", range_N1: [30, 60], range_N2: [10, 30], answer: "N1 - N2", context: "糖果" }
-                    ],
-                    "multiplication": [
-                        { template: "每盒有{N1}支鉛筆，有{N2}盒，總共有幾多支？", range_N1: [6, 12], range_N2: [3, 9], answer: "N1 * N2", context: "文具" },
-                        { template: "每排有{N1}張椅子，有{N2}排，總共幾多張椅子？", range_N1: [5, 10], range_N2: [4, 8], answer: "N1 * N2", context: "椅子" }
-                    ],
-                    "division": [
-                        { template: "有{N1}粒糖，平均分給{N2}個小朋友，每人有幾多粒？", range_N1: [12, 48], range_N2: [3, 8], answer: "N1 / N2", context: "糖果" },
-                        { template: "圖書館有{N1}本書，每個書架放{N2}本，可以放幾多個書架？", range_N1: [24, 96], range_N2: [6, 12], answer: "N1 / N2", context: "圖書館" }
-                    ],
-                    "mixed": [
-                        { template: "商店有{N1}件貨品，賣咗{N2}件，又入咗{N3}件，仲剩幾多件？", range_N1: [100, 300], range_N2: [30, 80], range_N3: [20, 50], answer: "(N1 - N2) + N3", context: "商店" }
-                    ]
+                // 括號（用於混合運算）
+                if (type === 'mixed') {
+                    elements.push({ type: 'parenthesis', value: '(', label: '(', correct: true });
+                    elements.push({ type: 'parenthesis', value: ')', label: ')', correct: true });
                 }
-            };
-        }
-
-        // ==================== GENERATE QUESTION ====================
-        function generateQuestion() {
-            const mode = state.currentMode;
-            const templates = problemBank.grade_3[mode === 'mixed' ? 'mixed' : 
-                                               mode === 'add' ? 'addition' :
-                                               mode === 'sub' ? 'subtraction' :
-                                               mode === 'mul' ? 'multiplication' : 'division'];
-            
-            const template = templates[Math.floor(Math.random() * templates.length)];
-            
-            // Generate values
-            const values = {};
-            for (let key in template.range_N1 !== undefined ? {N1: template.range_N1, N2: template.range_N2, N3: template.range_N3, N4: template.range_N4} : {}) {
-                // This is simplified - actual implementation needs proper handling
             }
             
-            let question = template.template;
-            let answer;
+            // 加入干擾項 - 數字
+            const distractorNumbers = [];
+            while (distractorNumbers.length < 2) {
+                const d = getRandom(1, 20);
+                if (![num1, num2, num3].includes(d)) {
+                    distractorNumbers.push(d);
+                }
+            }
+            distractorNumbers.forEach(n => {
+                elements.push({ type: 'distractor', value: n, label: n.toString(), correct: false });
+            });
             
-            // Simple value generation
-            const N1 = getRandom(template.range_N1[0], template.range_N1[1]);
-            const N2 = getRandom(template.range_N2[0], template.range_N2[1]);
+            // 加入干擾項 - 錯誤運算符號
+            const wrongOps = ['+', '-', '×', '÷'].filter(o => o !== operator);
+            wrongOps.slice(0, 2).forEach(op => {
+                elements.push({ type: 'distractor', value: op, label: op, correct: false });
+            });
             
-            question = question.replace('{N1}', N1).replace('{N2}', N2);
-            
-            if (template.range_N3) {
-                const N3 = getRandom(template.range_N3[0], template.range_N3[1]);
-                question = question.replace('{N3}', N3);
+            // 加入隨機括號
+            if (!elements.find(e => e.type === 'parenthesis')) {
+                elements.push({ type: 'distractor', value: '(', label: '(', correct: false });
+                elements.push({ type: 'distractor', value: ')', label: ')', correct: false });
             }
             
-            if (template.range_N4) {
-                const N4 = getRandom(template.range_N4[0], template.range_N4[1]);
-                question = question.replace('{N4}', N4);
-            }
-            
-            // Calculate answer
-            try {
-                answer = eval(template.answer.replace('N1', N1).replace('N2', N2));
-            } catch {
-                answer = 0;
-            }
-            
-            return { question, answer, context: template.context };
+            // 洗牌
+            return elements.sort(() => Math.random() - 0.5);
         }
 
         function getRandom(min, max) {
@@ -751,191 +640,313 @@ html, body {
         }
 
         // ==================== GAME LOGIC ====================
-        function setMode(mode) {
-            state.currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
         function startGame() {
-            initAudio();
-            
-            // Reset state
             state.score = 0;
             state.streak = 0;
-            state.stars = 0;
-            state.timeLeft = GAME_CONFIG.timeLimit;
+            state.currentQuestion = 0;
             state.gameActive = true;
-            state.questionsAnswered = 0;
-            state.correctAnswers = 0;
             
-            // Update UI
-            updateUI();
-            document.getElementById('game').classList.remove('hidden');
-            document.getElementById('result').classList.remove('show');
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
             
-            // Disable start button, enable next button, show restart button
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('startBtn').textContent = '🎮 挑戰中';
-            document.getElementById('nextBtn').disabled = false;
-            document.getElementById('restartBtn').style.display = 'inline-block';
-            
-            // Start timer
-            startTimer();
-            
-            // Generate first question
             nextQuestion();
         }
 
-        function startTimer() {
-            clearInterval(state.timer);
-            state.timer = setInterval(() => {
-                state.timeLeft--;
-                document.getElementById('timer').textContent = state.timeLeft;
-                
-                if (state.timeLeft <= 0) {
-                    endGame();
-                }
-            }, 1000);
-        }
-
         function nextQuestion() {
-            const q = generateQuestion();
-            state.currentQuestion = q;
+            state.currentQuestion++;
+            state.workspace = [];
             
-            document.getElementById('question').textContent = q.question;
-            document.getElementById('answer').value = '';
-            document.getElementById('answer').focus();
-            
-            // Enable next button during game
-            if (state.gameActive) {
-                document.getElementById('nextBtn').disabled = false;
+            if (state.currentQuestion > CONFIG.totalQuestions) {
+                showFinalResult();
+                return;
             }
             
-            state.questionsAnswered++;
-            updateProgress();
+            // Generate new problem
+            state.currentProblem = generateProblem();
+            
+            // Update UI
+            document.getElementById('question').textContent = state.currentProblem.question;
+            document.getElementById('score').textContent = state.score;
+            document.getElementById('questionNum').textContent = `${state.currentQuestion}/${CONFIG.totalQuestions}`;
+            document.getElementById('streak').textContent = state.streak;
+            document.getElementById('progressFill').style.width = `${((state.currentQuestion-1)/CONFIG.totalQuestions)*100}%`;
+            
+            // Generate elements
+            renderElements();
+            renderWorkspace();
+            
+            // Hide hint
+            document.getElementById('hintArea').classList.remove('show');
+            
+            // Hide result overlay
+            document.getElementById('resultOverlay').classList.remove('show');
         }
 
-        function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById('answer').value);
-            const input = document.getElementById('answer');
+        function renderElements() {
+            const container = document.getElementById('elementsContainer');
+            container.innerHTML = '';
             
-            console.log('checkAnswer called, userAnswer:', userAnswer, 'correctAnswer:', state.currentQuestion.answer);
+            state.currentProblem.elements.forEach((el, index) => {
+                const div = document.createElement('div');
+                div.className = `drag-element ${el.type}`;
+                div.draggable = true;
+                div.dataset.value = el.value;
+                div.dataset.label = el.label;
+                div.dataset.index = index;
+                div.textContent = el.label;
+                
+                div.ondragstart = dragStart;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function renderWorkspace() {
+            const workspace = document.getElementById('workspace');
             
-            if (userAnswer === state.currentQuestion.answer) {
-                // Correct!
-                playSound('correct');
-                createParticles('correct');
+            if (state.workspace.length === 0) {
+                workspace.innerHTML = '<span style="color: #999;" id="workspaceHint">未有任何元素</span>';
+                return;
+            }
+            
+            workspace.innerHTML = '';
+            
+            state.workspace.forEach((el, index) => {
+                const div = document.createElement('div');
+                div.className = 'workspace-element';
+                div.draggable = true;
+                div.dataset.workspaceIndex = index;
+                div.innerHTML = `
+                    <span>${el.label}</span>
+                    <button class="remove-btn" onclick="removeFromWorkspace(${index})">×</button>
+                `;
                 
-                state.correctAnswers++;
-                state.streak++;
+                div.ondragstart = workspaceDragStart;
                 
-                // Calculate points
-                const streakMultiplier = Math.min(state.streak, GAME_CONFIG.maxStreakBonus);
-                const points = GAME_CONFIG.pointsPerCorrect * streakMultiplier;
-                state.score += points;
-                console.log('Correct! Score:', state.score, 'Streak:', state.streak);
+                workspace.appendChild(div);
+            });
+        }
+
+        // ==================== DRAG AND DROP ====================
+        let draggedElement = null;
+        let draggedFrom = null; // 'elements' or 'workspace'
+
+        function dragStart(e) {
+            draggedElement = {
+                value: e.target.dataset.value,
+                label: e.target.dataset.label,
+                index: parseInt(e.target.dataset.index),
+                from: 'elements'
+            };
+            e.target.style.opacity = '0.5';
+        }
+
+        function workspaceDragStart(e) {
+            const index = parseInt(e.target.dataset.workspaceIndex);
+            draggedElement = {
+                value: state.workspace[index].value,
+                label: state.workspace[index].label,
+                index: index,
+                from: 'workspace'
+            };
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            document.getElementById('workspace').classList.add('drag-over');
+        }
+
+        function dragLeave(e) {
+            document.getElementById('workspace').classList.remove('drag-over');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            document.getElementById('workspace').classList.remove('drag-over');
+            
+            if (!draggedElement) return;
+            
+            if (draggedElement.from === 'elements') {
+                // Add to workspace
+                state.workspace.push({
+                    value: draggedElement.value,
+                    label: draggedElement.label
+                });
                 
-                // Stars for every 3 correct
-                if (state.correctAnswers % 3 === 0) {
-                    state.stars++;
+                // Mark original element as used
+                const elements = document.querySelectorAll('.drag-element');
+                elements[draggedElement.index].classList.add('used');
+                elements[draggedElement.index].draggable = false;
+            } else if (draggedElement.from === 'workspace') {
+                // Remove from original position
+                state.workspace.splice(draggedElement.index, 1);
+                // Add to end
+                state.workspace.push({
+                    value: draggedElement.value,
+                    label: draggedElement.label
+                });
+            }
+            
+            renderWorkspace();
+            renderElements(); // Re-render to update used states
+            draggedElement = null;
+        }
+
+        function removeFromWorkspace(index) {
+            const removed = state.workspace[index];
+            
+            // Remove from workspace
+            state.workspace.splice(index, 1);
+            
+            // Unmark the original element
+            const originalIndex = state.currentProblem.elements.findIndex(
+                el => el.value == removed.value && el.label == removed.label && el.correct
+            );
+            
+            if (originalIndex !== -1) {
+                const elements = document.querySelectorAll('.drag-element');
+                if (elements[originalIndex]) {
+                    elements[originalIndex].classList.remove('used');
+                    elements[originalIndex].draggable = true;
                 }
+            }
+            
+            renderWorkspace();
+            renderElements();
+        }
+
+        function clearWorkspace() {
+            state.workspace = [];
+            renderWorkspace();
+            renderElements();
+        }
+
+        // ==================== CHECK ANSWER ====================
+        function checkExpression() {
+            if (state.workspace.length === 0) {
+                showHint();
+                return;
+            }
+            
+            // Build expression string
+            const expression = state.workspace.map(el => el.value).join('');
+            
+            // Check if expression matches expected
+            const expected = state.currentProblem.correctExpression;
+            
+            // Calculate result
+            let userResult = null;
+            try {
+                // Convert × to * for eval
+                const evalExpr = expression.replace(/×/g, '*').replace(/÷/g, '/');
+                userResult = eval(evalExpr);
+            } catch (e) {
+                userResult = null;
+            }
+            
+            const isCorrect = expression === expected || userResult === state.currentProblem.expectedResult;
+            
+            if (isCorrect) {
+                // Correct!
+                state.streak++;
+                const bonus = Math.min(state.streak, CONFIG.maxStreak) * CONFIG.streakBonus;
+                state.score += CONFIG.pointsPerCorrect + bonus;
                 
-                // Update UI immediately
-                updateUI();
-                console.log('UI updated, score element:', document.getElementById('score').textContent);
-                
-                input.classList.add('correct');
-                input.classList.remove('wrong');
-                
-                setTimeout(() => {
-                    nextQuestion();
-                    input.classList.remove('correct');
-                }, 500);
+                showResultOverlay(true);
             } else {
                 // Wrong
-                playSound('wrong');
-                createParticles('wrong');
                 state.streak = 0;
-                console.log('Wrong! Streak reset to 0');
-                
-                // Update UI immediately
-                updateUI();
-                
-                input.classList.add('wrong');
-                input.classList.remove('correct');
-                
-                setTimeout(() => {
-                    input.classList.remove('wrong');
-                }, 500);
+                showResultOverlay(false);
             }
+            
+            updateUI();
         }
 
-        function checkEnter(event) {
-            if (event.key === 'Enter') {
-                if (document.getElementById('answer').value) {
-                    checkAnswer();
-                }
+        function showResultOverlay(correct) {
+            const overlay = document.getElementById('resultOverlay');
+            const emoji = document.getElementById('resultEmoji');
+            const score = document.getElementById('resultScore');
+            const text = document.getElementById('resultText');
+            
+            if (correct) {
+                emoji.textContent = '🎉';
+                score.textContent = `+${CONFIG.pointsPerCorrect + Math.min(state.streak, CONFIG.maxStreak) * CONFIG.streakBonus}`;
+                text.textContent = '答啱喇！勁揪！';
+                text.style.color = '#4CAF50';
+            } else {
+                emoji.textContent = '😅';
+                score.textContent = '再試過';
+                text.textContent = `正確算式係：${state.currentProblem.correctExpression}`;
+                text.style.color = '#ff9800';
             }
+            
+            overlay.classList.add('show');
         }
 
         function updateUI() {
             document.getElementById('score').textContent = state.score;
             document.getElementById('streak').textContent = state.streak;
-            document.getElementById('stars').textContent = '⭐'.repeat(state.stars) + '☆'.repeat(Math.max(0, 5 - state.stars));
         }
 
-        function updateProgress() {
-            const progress = (state.questionsAnswered / GAME_CONFIG.maxQuestions) * 100;
-            document.getElementById('progress').style.width = Math.min(progress, 100) + '%';
+        // ==================== HINT ====================
+        function showHint() {
+            const hintArea = document.getElementById('hintArea');
+            const hintContent = document.getElementById('hintContent');
+            
+            // Provide progressive hint
+            let hint = state.currentProblem.hint;
+            
+            // If workspace has some elements, give more specific hint
+            if (state.workspace.length > 0) {
+                const currentExpr = state.workspace.map(el => el.label).join(' ');
+                hint = `你而家組成既算式係：「${currentExpr}」<br><br>${state.currentProblem.hint}`;
+            }
+            
+            hintContent.innerHTML = hint;
+            hintArea.classList.add('show');
         }
 
-        function endGame() {
-            clearInterval(state.timer);
+        // ==================== FINAL RESULT ====================
+        function showFinalResult() {
             state.gameActive = false;
             
-            playSound('win');
-            createParticles('correct');
+            const accuracy = state.score / (CONFIG.totalQuestions * CONFIG.pointsPerCorrect) * 100;
             
-            // Show result
-            document.getElementById('game').classList.add('hidden');
-            document.getElementById('result').classList.add('show');
-            document.getElementById('finalScore').textContent = state.score;
+            let emoji = '';
+            let text = '';
             
-            // Reset buttons for next game
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('startBtn').textContent = '🚀 開始挑戰';
-            document.getElementById('nextBtn').disabled = true;
-            document.getElementById('restartBtn').style.display = 'none';
+            if (accuracy >= 90) {
+                emoji = '🏆';
+                text = '超級數學天才！';
+            } else if (accuracy >= 70) {
+                emoji = '🌟';
+                text = '好犀利！';
+            } else if (accuracy >= 50) {
+                emoji = '💪';
+                text = '唔錯喎！';
+            } else {
+                emoji = '🔥';
+                text = '再接再厲！';
+            }
             
-            // Feedback
-            let feedback = '';
-            const accuracy = state.correctAnswers / Math.max(1, state.questionsAnswered);
-            
-            if (accuracy === 1) feedback = '🌟 超級勁揪！全對呀！';
-            else if (accuracy >= 0.8) feedback = '👏 好犀利！';
-            else if (accuracy >= 0.6) feedback = '💪 唔錯喎！';
-            else feedback = '🔥 再接再厲！';
-            
-            document.getElementById('feedback').textContent = feedback;
-            document.getElementById('resultStars').textContent = '⭐'.repeat(state.stars) + '☆'.repeat(Math.max(0, 5 - state.stars));
+            const overlay = document.getElementById('resultOverlay');
+            overlay.innerHTML = `
+                <div class="result-box">
+                    <div class="result-emoji">${emoji}</div>
+                    <div class="result-score">${state.score}</div>
+                    <p style="font-size: 1.5em; margin: 10px 0;">${text}</p>
+                    <p style="color: #666;">完成曬 10 題喇！</p>
+                    <button class="btn btn-primary" style="margin-top: 20px;" onclick="location.reload()">
+                        🔄 再玩一次
+                    </button>
+                </div>
+            `;
+            overlay.classList.add('show');
         }
 
         // ==================== INIT ====================
         window.onload = () => {
-            loadProblemBank();
-            // Check answer when input has value and user pauses (300ms delay)
-            document.getElementById('answer').addEventListener('input', () => {
-                if (!state.gameActive) return;
-                const val = document.getElementById('answer').value;
-                if (val && val.length > 0) {
-                    // Add delay to avoid checking while typing
-                    clearTimeout(window.answerTimeout);
-                    window.answerTimeout = setTimeout(() => {
-                        checkAnswer();
-                    }, 500);
-                }
-            });
+            // Initialize any needed state
         };
     </script>
 </body>
