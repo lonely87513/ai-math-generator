@@ -411,6 +411,17 @@
         .drag-element, .workspace-element, .btn {
             -webkit-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Prevent scrolling while dragging on mobile */
+        .elements-container, .workspace {
+            touch-action: none;
+        }
+
+        /* Mobile touch feedback */
+        .drag-element:active, .workspace-element:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -696,6 +707,7 @@
                 div.textContent = el.label;
                 
                 div.ondragstart = dragStart;
+                div.ontouchstart = touchStart;
                 
                 container.appendChild(div);
             });
@@ -722,14 +734,17 @@
                 `;
                 
                 div.ondragstart = workspaceDragStart;
+                div.ontouchstart = touchStart;
                 
                 workspace.appendChild(div);
             });
         }
 
-        // ==================== DRAG AND DROP ====================
+        // ==================== DRAG AND DROP + TOUCH SUPPORT ====================
         let draggedElement = null;
-        let draggedFrom = null; // 'elements' or 'workspace'
+        let draggedFrom = null;
+        let touchClone = null;
+        let touchStartX = 0, touchStartY = 0;
 
         function dragStart(e) {
             draggedElement = {
@@ -751,6 +766,117 @@
             };
         }
 
+        // ==================== TOUCH SUPPORT FOR MOBILE ====================
+        function touchStart(e) {
+            // Check if touching remove button
+            if (e.target.classList.contains('remove-btn')) {
+                const index = parseInt(e.target.parentElement.dataset.workspaceIndex);
+                removeFromWorkspace(index);
+                return;
+            }
+            
+            const touch = e.touches[0];
+            const target = e.target.closest('.drag-element') || e.target.closest('.workspace-element');
+            if (!target) return;
+            
+            e.preventDefault();
+            
+            const isWorkspace = target.closest('#workspace') !== null;
+            
+            draggedElement = {
+                value: target.dataset.value,
+                label: target.dataset.label,
+                index: target.dataset.index !== undefined ? parseInt(target.dataset.index) : 
+                       target.dataset.workspaceIndex !== undefined ? parseInt(target.dataset.workspaceIndex) : 0,
+                from: isWorkspace ? 'workspace' : 'elements'
+            };
+            
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+            
+            // Create visual clone for dragging
+            touchClone = target.cloneNode(true);
+            touchClone.style.position = 'fixed';
+            touchClone.style.zIndex = '9999';
+            touchClone.style.pointerEvents = 'none';
+            touchClone.style.opacity = '0.8';
+            touchClone.style.transform = 'scale(1.1)';
+            touchClone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+            document.body.appendChild(touchClone);
+            
+            updateTouchClonePosition(touch);
+            
+            // Add move and end listeners
+            document.addEventListener('touchmove', touchMove, { passive: false });
+            document.addEventListener('touchend', touchEnd);
+            document.addEventListener('touchcancel', touchEnd);
+        }
+
+        function touchMove(e) {
+            if (!touchClone) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            updateTouchClonePosition(touch);
+        }
+
+        function updateTouchClonePosition(touch) {
+            if (!touchClone) return;
+            touchClone.style.left = (touch.clientX - 40) + 'px';
+            touchClone.style.top = (touch.clientY - 25) + 'px';
+        }
+
+        function touchEnd(e) {
+            if (!touchClone || !draggedElement) {
+                cleanupTouch();
+                return;
+            }
+            
+            const touch = e.changedTouches[0];
+            const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const workspace = elemBelow?.closest('#workspace');
+            
+            if (workspace) {
+                // Drop in workspace
+                handleDrop();
+            }
+            
+            cleanupTouch();
+        }
+
+        function cleanupTouch() {
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            draggedElement = null;
+            document.removeEventListener('touchmove', touchMove);
+            document.removeEventListener('touchend', touchEnd);
+            document.removeEventListener('touchcancel', touchEnd);
+            renderElements();
+            renderWorkspace();
+        }
+
+        function handleDrop() {
+            if (!draggedElement) return;
+            
+            if (draggedElement.from === 'elements') {
+                state.workspace.push({
+                    value: draggedElement.value,
+                    label: draggedElement.label
+                });
+            } else if (draggedElement.from === 'workspace') {
+                state.workspace.splice(draggedElement.index, 1);
+                state.workspace.push({
+                    value: draggedElement.value,
+                    label: draggedElement.label
+                });
+            }
+            
+            renderWorkspace();
+            renderElements();
+            draggedElement = null;
+        }
+
         function allowDrop(e) {
             e.preventDefault();
             document.getElementById('workspace').classList.add('drag-over');
@@ -766,30 +892,7 @@
             
             if (!draggedElement) return;
             
-            if (draggedElement.from === 'elements') {
-                // Add to workspace
-                state.workspace.push({
-                    value: draggedElement.value,
-                    label: draggedElement.label
-                });
-                
-                // Mark original element as used
-                const elements = document.querySelectorAll('.drag-element');
-                elements[draggedElement.index].classList.add('used');
-                elements[draggedElement.index].draggable = false;
-            } else if (draggedElement.from === 'workspace') {
-                // Remove from original position
-                state.workspace.splice(draggedElement.index, 1);
-                // Add to end
-                state.workspace.push({
-                    value: draggedElement.value,
-                    label: draggedElement.label
-                });
-            }
-            
-            renderWorkspace();
-            renderElements(); // Re-render to update used states
-            draggedElement = null;
+            handleDrop();
         }
 
         function removeFromWorkspace(index) {
