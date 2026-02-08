@@ -838,6 +838,9 @@ html, body {
                     state.stars++;
                 }
                 
+                // Update UI immediately
+                updateUI();
+                
                 input.classList.add('correct');
                 input.classList.remove('wrong');
                 
@@ -850,6 +853,10 @@ html, body {
                 playSound('wrong');
                 createParticles('wrong');
                 state.streak = 0;
+                
+                // Update UI immediately
+                updateUI();
+                
                 input.classList.add('wrong');
                 input.classList.remove('correct');
                 
@@ -857,8 +864,6 @@ html, body {
                     input.classList.remove('wrong');
                 }, 500);
             }
-            
-            updateUI();
         }
 
         function checkEnter(event) {
