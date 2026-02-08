@@ -635,36 +635,22 @@
                     operator: '×'
                 };
             } else if (type === 'time_morning') {
-                // 時間相關題目
-                const morning = getRandom(20, 80);
-                const afternoon = morning + getRandom(-30, 30);
-                if (afternoon > morning) {
-                    // 下午多咗
-                    const diff = afternoon - morning;
-                    problem = {
-                        type: 'time_add',
-                        question: `小明朝早收到 ${morning} 張心意卡，下晝收到比朝早多 ${diff} 張，全日共收幾多張？`,
-                        correctExpression: `${morning}+${afternoon}`,
-                        expectedResult: morning + afternoon,
-                        hint: `朝早 ${morning} 張，下晝 ${afternoon} 張`,
-                        elements: generateElements([morning, afternoon], null, '+'),
-                        numbers: [morning, afternoon],
-                        operator: '+'
-                    };
-                } else {
-                    // 下午少咗
-                    const diff = morning - afternoon;
-                    problem = {
-                        type: 'time_sub',
-                        question: `小明朝早賣咗 ${morning} 個包，下晝賣咗比朝早少 ${diff} 個，全日共賣幾多個？`,
-                        correctExpression: `${morning}+${afternoon}`,
-                        expectedResult: morning + afternoon,
-                        hint: `朝早 ${morning} 個，下晝 ${afternoon} 個`,
-                        elements: generateElements([morning, afternoon], null, '+'),
-                        numbers: [morning, afternoon],
-                        operator: '+'
-                    };
-                }
+                // 時間相關題目 - 朝早/下晝
+                const morning = getRandom(30, 90);
+                const diff = getRandom(15, 40);
+                // 下晝比朝早少咗 diff
+                const afternoon = morning - diff;
+                const result = morning + afternoon;
+                problem = {
+                    type: 'time_add',
+                    question: `小明朝早賣咗 ${morning} 個包，下晝賣咗比朝早少 ${diff} 個，全日共賣幾多個？`,
+                    correctExpression: `${morning}+${morning}-${diff}`,
+                    expectedResult: result,
+                    hint: `朝早 ${morning} 個，下晝 ${morning}-${diff} = ${afternoon} 個`,
+                    elements: generateElements([morning, afternoon, diff], ['+', '-'], null),
+                    numbers: [morning, afternoon, diff],
+                    operators: ['+', '-']
+                };
             } else if (type === 'shopping_dozencake') {
                 // 購物題目 - 蛋糕
                 const cake = getRandom(5, 20);
