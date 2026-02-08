@@ -631,19 +631,35 @@
                     operator: '×'
                 };
             } else if (type === 'time_morning') {
-                const morning = getRandom(30, 90);
-                const diff = getRandom(15, 40);
-                const afternoon = morning - diff;
+                // 隨機選擇：下午比朝早少 OR 下午比朝早多
+                const morning = getRandom(40, 99);
+                const diff = getRandom(10, morning - 10);
+                const isAfternoonLess = Math.random() > 0.5;
+                
+                let afternoon, question, expression;
+                
+                if (isAfternoonLess) {
+                    // 下午比朝早少
+                    afternoon = morning - diff;
+                    question = `小明的麵包店早上賣出了 ${morning} 個麵包，下午賣出的數量比早上少了 ${diff} 個，全天共賣出多少個？`;
+                    expression = `${morning}+${morning}-${diff}`;
+                } else {
+                    // 下午比朝早多
+                    afternoon = morning + diff;
+                    question = `小明的麵包店早上賣出了 ${morning} 個麵包，下午賣出的數量比早上多了 ${diff} 個，全天共賣出多少個？`;
+                    expression = `${morning}+${morning}+${diff}`;
+                }
+                
                 const result = morning + afternoon;
                 problem = {
                     type: 'time_add',
-                    question: `小明的麵包店早上賣出了 ${morning} 個麵包，下午賣出的數量比早上少了 ${diff} 個，全天共賣出多少個？`,
-                    correctExpression: `${morning}+${morning}-${diff}`,
+                    question: question,
+                    correctExpression: expression,
                     expectedResult: result,
-                    hint: `早上 ${morning} 個，下午 ${morning}-${diff} = ${afternoon} 個`,
-                    elements: generateElements([morning, afternoon, diff], ['+', '-'], null),
+                    hint: `早上 ${morning} 個，下午 ${afternoon} 個`,
+                    elements: generateElements([morning, afternoon, diff], ['+'], null),
                     numbers: [morning, afternoon, diff],
-                    operators: ['+', '-']
+                    operators: ['+']
                 };
             } else if (type === 'shopping_dozencake') {
                 const cake = getRandom(5, 20);
