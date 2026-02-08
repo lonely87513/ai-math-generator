@@ -163,6 +163,12 @@
             color: white;
         }
 
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         .btn-success {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
@@ -170,6 +176,17 @@
 
         .btn-warning {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-warning:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #607D8B 0%, #546E7A 100%);
             color: white;
         }
 
@@ -521,8 +538,9 @@ html, body {
             </div>
 
             <!-- Buttons -->
-            <button class="btn btn-primary" onclick="startGame()">🚀 開始挑戰</button>
-            <button class="btn btn-warning" onclick="nextQuestion()">下一題</button>
+            <button class="btn btn-primary" id="startBtn" onclick="startGame()">🚀 開始挑戰</button>
+            <button class="btn btn-warning" id="nextBtn" onclick="nextQuestion()">下一題</button>
+            <button class="btn btn-secondary" id="restartBtn" onclick="startGame()" style="display:none;">🔄 重新開始</button>
         </div>
 
         <!-- Result Screen -->
@@ -756,6 +774,12 @@ html, body {
             document.getElementById('game').classList.remove('hidden');
             document.getElementById('result').classList.remove('show');
             
+            // Disable start button, enable next button, show restart button
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('startBtn').textContent = '🎮 挑戰中';
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('restartBtn').style.display = 'inline-block';
+            
             // Start timer
             startTimer();
             
@@ -782,6 +806,11 @@ html, body {
             document.getElementById('question').textContent = q.question;
             document.getElementById('answer').value = '';
             document.getElementById('answer').focus();
+            
+            // Enable next button during game
+            if (state.gameActive) {
+                document.getElementById('nextBtn').disabled = false;
+            }
             
             state.questionsAnswered++;
             updateProgress();
@@ -863,6 +892,12 @@ html, body {
             document.getElementById('result').classList.add('show');
             document.getElementById('finalScore').textContent = state.score;
             
+            // Reset buttons for next game
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = '🚀 開始挑戰';
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('restartBtn').style.display = 'none';
+            
             // Feedback
             let feedback = '';
             const accuracy = state.correctAnswers / Math.max(1, state.questionsAnswered);
@@ -879,8 +914,9 @@ html, body {
         // ==================== INIT ====================
         window.onload = () => {
             loadProblemBank();
-            document.getElementById('answer').addEventListener('input', () => {
-                if (document.getElementById('answer').value && state.gameActive) {
+            // Only check answer when Enter is pressed
+            document.getElementById('answer').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && document.getElementById('answer').value && state.gameActive) {
                     checkAnswer();
                 }
             });
