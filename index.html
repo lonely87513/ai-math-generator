@@ -924,10 +924,16 @@ html, body {
         // ==================== INIT ====================
         window.onload = () => {
             loadProblemBank();
-            // Only check answer when Enter is pressed
-            document.getElementById('answer').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && document.getElementById('answer').value && state.gameActive) {
-                    checkAnswer();
+            // Check answer when input has value and user pauses (300ms delay)
+            document.getElementById('answer').addEventListener('input', () => {
+                if (!state.gameActive) return;
+                const val = document.getElementById('answer').value;
+                if (val && val.length > 0) {
+                    // Add delay to avoid checking while typing
+                    clearTimeout(window.answerTimeout);
+                    window.answerTimeout = setTimeout(() => {
+                        checkAnswer();
+                    }, 500);
                 }
             });
         };
