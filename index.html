@@ -568,84 +568,161 @@
 
         // ==================== PROBLEM GENERATOR ====================
         function generateProblem() {
-            const types = ['add', 'sub', 'mul'];
+            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step'];
             const type = types[Math.floor(Math.random() * types.length)];
             
             let problem = {};
             
-            if (type === 'add') {
-                // 加法問題
-                const a = getRandom(10, 50);
-                const b = getRandom(5, 30);
+            if (type === 'add_2num') {
+                // 簡單加法
+                const a = getRandom(15, 80);
+                const b = getRandom(10, 50);
                 const result = a + b;
                 problem = {
                     type: 'add',
                     question: `小明有 ${a} 粒糖，媽媽再比 ${b} 粒佢，總共有幾多粒？`,
                     correctExpression: `${a}+${b}`,
                     expectedResult: result,
-                    hint: `題目話佢有 ${a} 粒糖，再加 ${b} 粒`,
-                    elements: generateElements(a, b, null, '+', 'add', true),
+                    hint: `有 ${a} 粒糖，再加 ${b} 粒，即係 ${a} + ${b}`,
+                    elements: generateElements([a, b], null, '+'),
                     numbers: [a, b],
                     operator: '+'
                 };
+            } else if (type === 'add_3num') {
+                // 三個數加法
+                const a = getRandom(20, 60);
+                const b = getRandom(15, 40);
+                const c = getRandom(10, 30);
+                const result = a + b + c;
+                problem = {
+                    type: 'add_3num',
+                    question: `圖書館有 ${a} 本書，第一日借咗 ${b} 本，第二日又借咗 ${c} 本，總共借咗幾多本？`,
+                    correctExpression: `${a}+${b}+${c}`,
+                    expectedResult: result,
+                    hint: `三個數加埋：${a} + ${b} + ${c}`,
+                    elements: generateElements([a, b, c], null, '+'),
+                    numbers: [a, b, c],
+                    operator: '+'
+                };
             } else if (type === 'sub') {
-                // 減法問題
-                const a = getRandom(30, 80);
-                const b = getRandom(10, 40);
-                const result = Math.max(a, b) - Math.min(a, b);
-                const firstNum = Math.max(a, b);
-                const secondNum = Math.min(a, b);
+                // 減法
+                const a = getRandom(50, 150);
+                const b = getRandom(20, 60);
+                const result = a - b;
                 problem = {
                     type: 'sub',
-                    question: `有 ${firstNum} 粒糖，用咗 ${secondNum} 粒，仲剩幾多粒？`,
-                    correctExpression: `${firstNum}-${secondNum}`,
+                    question: `有 ${a} 粒糖，用咗 ${b} 粒，仲剩幾多粒？`,
+                    correctExpression: `${a}-${b}`,
                     expectedResult: result,
-                    hint: `由 ${firstNum} 粒入面扣走 ${secondNum} 粒`,
-                    elements: generateElements(firstNum, secondNum, null, '-', 'sub', true),
-                    numbers: [firstNum, secondNum],
+                    hint: `由 ${a} 粒入面扣走 ${b} 粒，即係 ${a} - ${b}`,
+                    elements: generateElements([a, b], null, '-'),
+                    numbers: [a, b],
                     operator: '-'
                 };
-            } else {
-                // 乘法問題 (簡單)
-                const a = getRandom(2, 9);
-                const b = getRandom(3, 8);
+            } else if (type === 'mul') {
+                // 乘法
+                const a = getRandom(3, 12);
+                const b = getRandom(4, 9);
                 const result = a * b;
                 problem = {
                     type: 'mul',
                     question: `每盒有 ${a} 支鉛筆，有 ${b} 盒，總共有幾多支？`,
                     correctExpression: `${a}×${b}`,
                     expectedResult: result,
-                    hint: `${a} 支筆 ${b} 盒，即係要「${a} × ${b}」`,
-                    elements: generateElements(a, b, null, '×', 'mul', true),
+                    hint: `${a} 支筆 ${b} 盒，即係 ${a} × ${b}`,
+                    elements: generateElements([a, b], null, '×'),
                     numbers: [a, b],
                     operator: '×'
+                };
+            } else if (type === 'time_morning') {
+                // 時間相關題目
+                const morning = getRandom(20, 80);
+                const afternoon = morning + getRandom(-30, 30);
+                if (afternoon > morning) {
+                    // 下午多咗
+                    const diff = afternoon - morning;
+                    problem = {
+                        type: 'time_add',
+                        question: `小明朝早收到 ${morning} 張心意卡，下晝收到比朝早多 ${diff} 張，全日共收幾多張？`,
+                        correctExpression: `${morning}+${afternoon}`,
+                        expectedResult: morning + afternoon,
+                        hint: `朝早 ${morning} 張，下晝 ${afternoon} 張`,
+                        elements: generateElements([morning, afternoon], null, '+'),
+                        numbers: [morning, afternoon],
+                        operator: '+'
+                    };
+                } else {
+                    // 下午少咗
+                    const diff = morning - afternoon;
+                    problem = {
+                        type: 'time_sub',
+                        question: `小明朝早賣咗 ${morning} 個包，下晝賣咗比朝早少 ${diff} 個，全日共賣幾多個？`,
+                        correctExpression: `${morning}+${afternoon}`,
+                        expectedResult: morning + afternoon,
+                        hint: `朝早 ${morning} 個，下晝 ${afternoon} 個`,
+                        elements: generateElements([morning, afternoon], null, '+'),
+                        numbers: [morning, afternoon],
+                        operator: '+'
+                    };
+                }
+            } else if (type === 'shopping_dozencake') {
+                // 購物題目 - 蛋糕
+                const cake = getRandom(5, 20);
+                const dozen = 12;
+                const result = cake * dozen;
+                problem = {
+                    type: 'shopping_mul',
+                    question: `一個蛋糕賣 ${cake} 元，買一打（12個）要幾多錢？`,
+                    correctExpression: `${cake}×12`,
+                    expectedResult: result,
+                    hint: `一個 ${cake} 元，一打有 12 個，即係 ${cake} × 12`,
+                    elements: generateElements([cake, 12], null, '×'),
+                    numbers: [cake, 12],
+                    operator: '×'
+                };
+            } else if (type === 'mixed_2step') {
+                // 兩步運算
+                const start = getRandom(50, 150);
+                const add1 = getRandom(20, 60);
+                const sub1 = getRandom(15, 50);
+                const result = start + add1 - sub1;
+                problem = {
+                    type: 'mixed_2step',
+                    question: `小明有 ${start} 粒糖，媽媽比咗 ${add1} 粒佢，然後用咗 ${sub1} 粒，仲剩幾多粒？`,
+                    correctExpression: `${start}+${add1}-${sub1}`,
+                    expectedResult: result,
+                    hint: `先加 ${add1}，再減 ${sub1}：${start} + ${add1} - ${sub1}`,
+                    elements: generateElements([start, add1, sub1], ['+', '-'], null),
+                    numbers: [start, add1, sub1],
+                    operators: ['+', '-']
                 };
             }
             
             return problem;
         }
 
-        function generateElements(num1, num2, num3, operator, type, includeCorrect) {
+        function generateElements(numbers, operators, singleOp) {
             const elements = [];
             
-            // 加入正確的元素
-            if (includeCorrect) {
-                elements.push({ type: 'number', value: num1, label: num1.toString(), correct: true });
-                elements.push({ type: 'number', value: num2, label: num2.toString(), correct: true });
-                elements.push({ type: 'operator', value: operator, label: operator, correct: true });
-                
-                // 括號（用於混合運算）
-                if (type === 'mixed') {
-                    elements.push({ type: 'parenthesis', value: '(', label: '(', correct: true });
-                    elements.push({ type: 'parenthesis', value: ')', label: ')', correct: true });
-                }
+            // 加入正確的數字
+            numbers.forEach(n => {
+                elements.push({ type: 'number', value: n, label: n.toString(), correct: true });
+            });
+            
+            // 加入正確的運算符號
+            if (singleOp) {
+                elements.push({ type: 'operator', value: singleOp, label: singleOp, correct: true });
+            } else if (operators) {
+                operators.forEach(op => {
+                    elements.push({ type: 'operator', value: op, label: op, correct: true });
+                });
             }
             
-            // 加入干擾項 - 數字
+            // 加入干擾項 - 更多數字
             const distractorNumbers = [];
-            while (distractorNumbers.length < 2) {
-                const d = getRandom(1, 20);
-                if (![num1, num2, num3].includes(d)) {
+            while (distractorNumbers.length < 3) {
+                const d = getRandom(10, 99);
+                if (!numbers.includes(d)) {
                     distractorNumbers.push(d);
                 }
             }
@@ -654,16 +731,16 @@
             });
             
             // 加入干擾項 - 錯誤運算符號
-            const wrongOps = ['+', '-', '×', '÷'].filter(o => o !== operator);
+            const allOps = ['+', '-', '×', '÷'];
+            let correctOp = singleOp || (operators ? operators[0] : '+');
+            const wrongOps = allOps.filter(o => o !== correctOp);
             wrongOps.slice(0, 2).forEach(op => {
                 elements.push({ type: 'distractor', value: op, label: op, correct: false });
             });
             
-            // 加入隨機括號
-            if (!elements.find(e => e.type === 'parenthesis')) {
-                elements.push({ type: 'distractor', value: '(', label: '(', correct: false });
-                elements.push({ type: 'distractor', value: ')', label: ')', correct: false });
-            }
+            // 加入括號
+            elements.push({ type: 'parenthesis', value: '(', label: '(', correct: false });
+            elements.push({ type: 'parenthesis', value: ')', label: ')', correct: false });
             
             // 洗牌
             return elements.sort(() => Math.random() - 0.5);
@@ -1060,7 +1137,7 @@
             } else {
                 emoji.textContent = '😅';
                 score.textContent = '再試過';
-                text.textContent = `正確算式係：${state.currentProblem.correctExpression}`;
+                text.textContent = `正確算式係：${state.currentProblem.correctExpression} = ${state.currentProblem.expectedResult}`;
                 text.style.color = '#ff9800';
             }
             
