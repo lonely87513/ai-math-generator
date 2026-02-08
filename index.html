@@ -456,11 +456,11 @@
             <p class="subtitle">拖曳數字同運算符號，組成正確既算式！</p>
             
             <div class="instructions">
-                📖 <strong>點玩：</strong><br>
-                1. 睇清楚題目<br>
-                2. 拖曳或點擊啱啱數字同符號<br>
+                📖 <strong>玩法說明：</strong><br>
+                1. 仔細閱讀題目<br>
+                2. 拖曳或點擊正確的數字與運算符號<br>
                 3. 組成算式後按「✅ 確認」<br>
-                4. 唔識可以按「💡 提示」
+                4. 如有需要可按「💡 提示」
             </div>
             
             <button class="btn btn-primary" id="startBtn" style="font-size: 1.2em; padding: 15px 40px;">
@@ -574,107 +574,99 @@
             let problem = {};
             
             if (type === 'add_2num') {
-                // 簡單加法
                 const a = getRandom(15, 80);
                 const b = getRandom(10, 50);
                 const result = a + b;
                 problem = {
                     type: 'add',
-                    question: `小明有 ${a} 粒糖，媽媽再比 ${b} 粒佢，總共有幾多粒？`,
+                    question: `小明有 ${a} 粒糖果，媽媽再給了他 ${b} 粒，總共有多少粒？`,
                     correctExpression: `${a}+${b}`,
                     expectedResult: result,
-                    hint: `有 ${a} 粒糖，再加 ${b} 粒，即係 ${a} + ${b}`,
+                    hint: `有 ${a} 粒糖果，再加 ${b} 粒，即 ${a} + ${b}`,
                     elements: generateElements([a, b], null, '+'),
                     numbers: [a, b],
                     operator: '+'
                 };
             } else if (type === 'add_3num') {
-                // 三個數加法
                 const a = getRandom(20, 60);
                 const b = getRandom(15, 40);
                 const c = getRandom(10, 30);
                 const result = a + b + c;
                 problem = {
                     type: 'add_3num',
-                    question: `圖書館有 ${a} 本書，第一日借咗 ${b} 本，第二日又借咗 ${c} 本，總共借咗幾多本？`,
+                    question: `圖書館有 ${a} 本書，第一天借出了 ${b} 本，第二天又借出了 ${c} 本，總共借出了多少本？`,
                     correctExpression: `${a}+${b}+${c}`,
                     expectedResult: result,
-                    hint: `三個數加埋：${a} + ${b} + ${c}`,
+                    hint: `三個數相加：${a} + ${b} + ${c}`,
                     elements: generateElements([a, b, c], null, '+'),
                     numbers: [a, b, c],
                     operator: '+'
                 };
             } else if (type === 'sub') {
-                // 減法
                 const a = getRandom(50, 150);
                 const b = getRandom(20, 60);
                 const result = a - b;
                 problem = {
                     type: 'sub',
-                    question: `有 ${a} 粒糖，用咗 ${b} 粒，仲剩幾多粒？`,
+                    question: `有 ${a} 粒糖果，用了 ${b} 粒，剩餘多少粒？`,
                     correctExpression: `${a}-${b}`,
                     expectedResult: result,
-                    hint: `由 ${a} 粒入面扣走 ${b} 粒，即係 ${a} - ${b}`,
+                    hint: `由 ${a} 粒中扣減 ${b} 粒，即 ${a} - ${b}`,
                     elements: generateElements([a, b], null, '-'),
                     numbers: [a, b],
                     operator: '-'
                 };
             } else if (type === 'mul') {
-                // 乘法
                 const a = getRandom(3, 12);
                 const b = getRandom(4, 9);
                 const result = a * b;
                 problem = {
                     type: 'mul',
-                    question: `每盒有 ${a} 支鉛筆，有 ${b} 盒，總共有幾多支？`,
+                    question: `每盒有 ${a} 支鉛筆，有 ${b} 盒，總共有多少支？`,
                     correctExpression: `${a}×${b}`,
                     expectedResult: result,
-                    hint: `${a} 支筆 ${b} 盒，即係 ${a} × ${b}`,
+                    hint: `${a} 支鉛筆 ${b} 盒，即 ${a} × ${b}`,
                     elements: generateElements([a, b], null, '×'),
                     numbers: [a, b],
                     operator: '×'
                 };
             } else if (type === 'time_morning') {
-                // 時間相關題目 - 朝早/下晝
                 const morning = getRandom(30, 90);
                 const diff = getRandom(15, 40);
-                // 下晝比朝早少咗 diff
                 const afternoon = morning - diff;
                 const result = morning + afternoon;
                 problem = {
                     type: 'time_add',
-                    question: `小明朝早賣咗 ${morning} 個包，下晝賣咗比朝早少 ${diff} 個，全日共賣幾多個？`,
+                    question: `小明的麵包店早上賣出了 ${morning} 個麵包，下午賣出的數量比早上少了 ${diff} 個，全天共賣出多少個？`,
                     correctExpression: `${morning}+${morning}-${diff}`,
                     expectedResult: result,
-                    hint: `朝早 ${morning} 個，下晝 ${morning}-${diff} = ${afternoon} 個`,
+                    hint: `早上 ${morning} 個，下午 ${morning}-${diff} = ${afternoon} 個`,
                     elements: generateElements([morning, afternoon, diff], ['+', '-'], null),
                     numbers: [morning, afternoon, diff],
                     operators: ['+', '-']
                 };
             } else if (type === 'shopping_dozencake') {
-                // 購物題目 - 蛋糕
                 const cake = getRandom(5, 20);
                 const dozen = 12;
                 const result = cake * dozen;
                 problem = {
                     type: 'shopping_mul',
-                    question: `一個蛋糕賣 ${cake} 元，買一打（12個）要幾多錢？`,
+                    question: `一個蛋糕售價為 ${cake} 元，購買一打（12個）需要多少元？`,
                     correctExpression: `${cake}×12`,
                     expectedResult: result,
-                    hint: `一個 ${cake} 元，一打有 12 個，即係 ${cake} × 12`,
+                    hint: `一個 ${cake} 元，一打有 12 個，即 ${cake} × 12`,
                     elements: generateElements([cake, 12], null, '×'),
                     numbers: [cake, 12],
                     operator: '×'
                 };
             } else if (type === 'mixed_2step') {
-                // 兩步運算
                 const start = getRandom(50, 150);
                 const add1 = getRandom(20, 60);
                 const sub1 = getRandom(15, 50);
                 const result = start + add1 - sub1;
                 problem = {
                     type: 'mixed_2step',
-                    question: `小明有 ${start} 粒糖，媽媽比咗 ${add1} 粒佢，然後用咗 ${sub1} 粒，仲剩幾多粒？`,
+                    question: `小明有 ${start} 粒糖果，媽媽給了他 ${add1} 粒，然後他用了 ${sub1} 粒，剩餘多少粒？`,
                     correctExpression: `${start}+${add1}-${sub1}`,
                     expectedResult: result,
                     hint: `先加 ${add1}，再減 ${sub1}：${start} + ${add1} - ${sub1}`,
