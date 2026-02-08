@@ -820,6 +820,8 @@ html, body {
             const userAnswer = parseInt(document.getElementById('answer').value);
             const input = document.getElementById('answer');
             
+            console.log('checkAnswer called, userAnswer:', userAnswer, 'correctAnswer:', state.currentQuestion.answer);
+            
             if (userAnswer === state.currentQuestion.answer) {
                 // Correct!
                 playSound('correct');
@@ -832,6 +834,7 @@ html, body {
                 const streakMultiplier = Math.min(state.streak, GAME_CONFIG.maxStreakBonus);
                 const points = GAME_CONFIG.pointsPerCorrect * streakMultiplier;
                 state.score += points;
+                console.log('Correct! Score:', state.score, 'Streak:', state.streak);
                 
                 // Stars for every 3 correct
                 if (state.correctAnswers % 3 === 0) {
@@ -840,6 +843,7 @@ html, body {
                 
                 // Update UI immediately
                 updateUI();
+                console.log('UI updated, score element:', document.getElementById('score').textContent);
                 
                 input.classList.add('correct');
                 input.classList.remove('wrong');
@@ -853,6 +857,7 @@ html, body {
                 playSound('wrong');
                 createParticles('wrong');
                 state.streak = 0;
+                console.log('Wrong! Streak reset to 0');
                 
                 // Update UI immediately
                 updateUI();
