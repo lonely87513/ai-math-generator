@@ -165,7 +165,7 @@
             border-radius: 15px;
             padding: 15px;
             margin: 15px 0;
-            min-height: 80px;
+            min-height: 120px;
         }
 
         .workspace-label {
@@ -177,13 +177,13 @@
         .workspace {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
             justify-content: center;
-            min-height: 50px;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
             align-items: center;
+            min-height: 80px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
         }
 
         .workspace-slot {
@@ -423,6 +423,29 @@
         .drag-element:active, .workspace-element:active {
             transform: scale(0.95);
         }
+
+        .drag-element.used {
+            opacity: 0.3;
+            pointer-events: none;
+            filter: grayscale(50%);
+        }
+
+        /* Workspace drop zone highlight */
+        .workspace.drag-over {
+            background: #fff9c4;
+            border-color: #ffc107;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
+        }
+
+        /* Touch drag visual */
+        .touch-dragging {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.9;
+            transform: scale(1.15);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
     </style>
 </head>
 <body>
@@ -435,7 +458,7 @@
             <div class="instructions">
                 📖 <strong>點玩：</strong><br>
                 1. 睇清楚題目<br>
-                2. 拖曳啱啱數字同符號落去工作區<br>
+                2. 拖曳或點擊啱啱數字同符號<br>
                 3. 組成算式後按「✅ 確認」<br>
                 4. 唔識可以按「💡 提示」
             </div>
@@ -486,7 +509,7 @@
 
             <!-- Workspace -->
             <div class="workspace-area">
-                <div class="workspace-label">🔧 工作區（拖曳元素落去）：</div>
+                <div class="workspace-label">🔧 工作區（拖曳或點擊元素落去）：</div>
                 <div class="workspace" id="workspace" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                     <span style="color: #999;" id="workspaceHint">未有任何元素</span>
                 </div>
@@ -767,9 +790,14 @@
         }
 
         // ==================== TOUCH SUPPORT FOR MOBILE ====================
+        let draggedElement = null;
+        let touchClone = null;
+        let touchOffsetX = 0, touchOffsetY = 0;
+
         function touchStart(e) {
             // Check if touching remove button
             if (e.target.classList.contains('remove-btn')) {
+                e.preventDefault();
                 const index = parseInt(e.target.parentElement.dataset.workspaceIndex);
                 removeFromWorkspace(index);
                 return;
@@ -782,6 +810,7 @@
             e.preventDefault();
             
             const isWorkspace = target.closest('#workspace') !== null;
+            const rect = target.getBoundingClientRect();
             
             draggedElement = {
                 value: target.dataset.value,
@@ -791,20 +820,28 @@
                 from: isWorkspace ? 'workspace' : 'elements'
             };
             
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
+            // Calculate offset so finger doesn't cover element
+            touchOffsetX = touch.clientX - rect.left;
+            touchOffsetY = touch.clientY - rect.top;
+            
+            // Hide original temporarily
+            target.style.opacity = '0.3';
             
             // Create visual clone for dragging
             touchClone = target.cloneNode(true);
             touchClone.style.position = 'fixed';
             touchClone.style.zIndex = '9999';
             touchClone.style.pointerEvents = 'none';
-            touchClone.style.opacity = '0.8';
-            touchClone.style.transform = 'scale(1.1)';
-            touchClone.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+            touchClone.style.opacity = '0.9';
+            touchClone.style.transform = 'scale(1.15)';
+            touchClone.style.boxShadow = '0 15px 40px rgba(0,0,0,0.4)';
+            touchClone.style.transition = 'transform 0.1s';
             document.body.appendChild(touchClone);
             
             updateTouchClonePosition(touch);
+            
+            // Highlight workspace
+            document.getElementById('workspace').classList.add('drag-over');
             
             // Add move and end listeners
             document.addEventListener('touchmove', touchMove, { passive: false });
@@ -815,25 +852,47 @@
         function touchMove(e) {
             if (!touchClone) return;
             e.preventDefault();
+            
             const touch = e.touches[0];
             updateTouchClonePosition(touch);
+            
+            // Check if over workspace
+            const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const workspace = elemBelow?.closest('#workspace');
+            
+            if (workspace) {
+                document.getElementById('workspace').classList.add('drag-over');
+            } else {
+                document.getElementById('workspace').classList.remove('drag-over');
+            }
         }
 
         function updateTouchClonePosition(touch) {
             if (!touchClone) return;
-            touchClone.style.left = (touch.clientX - 40) + 'px';
-            touchClone.style.top = (touch.clientY - 25) + 'px';
+            // Position element above finger
+            touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+            touchClone.style.top = (touch.clientY - touchOffsetY - 50) + 'px';
         }
 
         function touchEnd(e) {
-            if (!touchClone || !draggedElement) {
+            if (!touchClone) {
                 cleanupTouch();
                 return;
             }
             
             const touch = e.changedTouches[0];
+            
+            // Check what's under the finger
             const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
             const workspace = elemBelow?.closest('#workspace');
+            const elementTarget = elemBelow?.closest('.drag-element');
+            
+            // Quick tap: if tapped on element area but not dropping in workspace, add it
+            if (elementTarget && !workspace) {
+                handleTapAdd(elementTarget);
+                cleanupTouch();
+                return;
+            }
             
             if (workspace) {
                 // Drop in workspace
@@ -843,15 +902,38 @@
             cleanupTouch();
         }
 
+        // Tap to add (simpler for mobile)
+        function handleTapAdd(target) {
+            if (!draggedElement) return;
+            
+            const index = parseInt(target.dataset.index);
+            const el = state.currentProblem.elements[index];
+            
+            if (el && !target.classList.contains('used')) {
+                state.workspace.push({
+                    value: el.value,
+                    label: el.label
+                });
+                renderElements();
+                renderWorkspace();
+            }
+        }
+
         function cleanupTouch() {
             if (touchClone) {
                 touchClone.remove();
                 touchClone = null;
             }
             draggedElement = null;
+            
+            document.getElementById('workspace').classList.remove('drag-over');
+            
+            // Remove listeners
             document.removeEventListener('touchmove', touchMove);
             document.removeEventListener('touchend', touchEnd);
             document.removeEventListener('touchcancel', touchEnd);
+            
+            // Refresh displays
             renderElements();
             renderWorkspace();
         }
