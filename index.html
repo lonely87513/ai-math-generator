@@ -568,7 +568,7 @@
 
         // ==================== PROBLEM GENERATOR ====================
         function generateProblem() {
-            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step'];
+            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step', 'big_add', 'red_packet', 'airconditioner', 'savings'];
             const type = types[Math.floor(Math.random() * types.length)];
             
             let problem = {};
@@ -674,6 +674,61 @@
                     elements: generateElements([cake, 12], null, '×'),
                     numbers: [cake, 12],
                     operator: '×'
+                };
+            } else if (type === 'big_add') {
+                // 大數加法
+                problem = {
+                    type: 'big_add',
+                    question: `玩具店有 1879 盒模型船和 2477 盒模型車，玩具店共有模型船和模型車多少盒？`,
+                    correctExpression: `1879+2477`,
+                    expectedResult: 1879 + 2477,
+                    hint: `將模型船數量加埋模型車數量：1879 + 2477`,
+                    elements: generateElements([1879, 2477], null, '+'),
+                    numbers: [1879, 2477],
+                    operator: '+'
+                };
+            } else if (type === 'red_packet') {
+                // 利是錢 - 求相差
+                const money1 = 1395;
+                const money2 = 2860;
+                problem = {
+                    type: 'red_packet',
+                    question: `永健有 ${money1} 元利是錢，彤彤有 ${money2} 元利是錢，兩人的利是錢相差多少元？`,
+                    correctExpression: `${money2}-${money1}`,
+                    expectedResult: money2 - money1,
+                    hint: `用彤彤既錢扣減永健既錢：${money2} - ${money1}`,
+                    elements: generateElements([money1, money2], null, '-'),
+                    numbers: [money1, money2],
+                    operator: '-'
+                };
+            } else if (type === 'airconditioner') {
+                // 冷氣機 - 兩步減法
+                const original = 3999;
+                const discount1 = 1199;
+                const discount2 = 499;
+                problem = {
+                    type: 'airconditioner',
+                    question: `冷氣機原價 ${original} 元，現減價 ${discount1} 元，持會員卡可再減 ${discount2} 元。爸爸持會員卡買一台冷氣機，需付多少元？`,
+                    correctExpression: `${original}-${discount1}-${discount2}`,
+                    expectedResult: original - discount1 - discount2,
+                    hint: `先減 ${discount1}，再減 ${discount2}：${original} - ${discount1} - ${discount2}`,
+                    elements: generateElements([original, discount1, discount2], ['-'], null),
+                    numbers: [original, discount1, discount2],
+                    operators: ['-']
+                };
+            } else if (type === 'savings') {
+                // 儲蓄問題 - 兩步加法
+                const liheng = 1658;
+                const jing = liheng + 2407;
+                problem = {
+                    type: 'savings',
+                    question: `立行有 ${liheng} 元儲蓄，靜兒比立行多 ${2407} 元，立行和靜兒共有儲蓄多少元？`,
+                    correctExpression: `${liheng}+${liheng}+${2407}`,
+                    expectedResult: liheng + jing,
+                    hint: `靜兒有 ${liheng} + ${2407} = ${jing} 元，再加立行既 ${liheng}`,
+                    elements: generateElements([liheng, 2407], null, '+'),
+                    numbers: [liheng, jing, 2407],
+                    operator: '+'
                 };
             } else if (type === 'mixed_2step') {
                 const start = getRandom(50, 150);
