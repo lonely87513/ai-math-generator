@@ -568,7 +568,7 @@
 
         // ==================== PROBLEM GENERATOR ====================
         function generateProblem() {
-            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step', 'big_add', 'red_packet', 'airconditioner', 'savings'];
+            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step', 'big_add', 'red_packet', 'airconditioner', 'savings', 'yogurt_drink', 'farm_milk', 'fish_egg', 'walking_path', 'milk_weight', 'museum_visitors', 'town_population', 'pocket_money', 'supermarket_juice'];
             const type = types[Math.floor(Math.random() * types.length)];
             
             let problem = {};
@@ -729,6 +729,119 @@
                     elements: generateElements([liheng, 2407], null, '+'),
                     numbers: [liheng, jing, 2407],
                     operator: '+'
+                };
+            } else if (type === 'yogurt_drink') {
+                // 乳酸菌飲品 - 乘法
+                problem = {
+                    type: 'yogurt_drink',
+                    question: `一瓶乳酸菌飲品的容量是 120 毫升。買 2 打乳酸菌飲品，共有多少毫升？`,
+                    correctExpression: `120×24`,
+                    expectedResult: 120 * 24,
+                    hint: `2 打 = 24 支，120ml × 24`,
+                    elements: generateElements([120, 24], null, '×'),
+                    numbers: [120, 24],
+                    operator: '×'
+                };
+            } else if (type === 'farm_milk') {
+                // 農場牛奶 - 乘法
+                problem = {
+                    type: 'farm_milk',
+                    question: `一個農場每天產出 34 公升的牛奶，每公升牛奶的價格是 18 元。農場一天的牛奶總收入是多少元？`,
+                    correctExpression: `34×18`,
+                    expectedResult: 34 * 18,
+                    hint: `34 公升 × 18 元 = 收入`,
+                    elements: generateElements([34, 18], null, '×'),
+                    numbers: [34, 18],
+                    operator: '×'
+                };
+            } else if (type === 'fish_egg') {
+                // 魚蛋分俾同學 - 除法
+                problem = {
+                    type: 'fish_egg',
+                    question: `李老師買了 175 粒魚蛋，他把每 5 粒魚蛋分成一串，然後把串好的魚蛋平均分給 7 個同學，每人可分得魚蛋多少粒？`,
+                    correctExpression: `175÷5÷7`,
+                    expectedResult: Math.floor(175 / 5 / 7),
+                    hint: `先 175 ÷ 5 = 35 串，再 35 ÷ 7 = 5 粒`,
+                    elements: generateElements([175, 5, 7], ['÷'], null),
+                    numbers: [175, 5, 7],
+                    operators: ['÷']
+                };
+            } else if (type === 'walking_path') {
+                // 步行徑長度 - 大數加法
+                problem = {
+                    type: 'walking_path',
+                    question: `第一段長 5212 米，第二段長 3189 米。這兩段步行徑共長多少米？`,
+                    correctExpression: `5212+3189`,
+                    expectedResult: 5212 + 3189,
+                    hint: `將兩段長度相加：5212 + 3189`,
+                    elements: generateElements([5212, 3189], null, '+'),
+                    numbers: [5212, 3189],
+                    operator: '+'
+                };
+            } else if (type === 'milk_weight') {
+                // 牛奶重量 - 加法
+                problem = {
+                    type: 'milk_weight',
+                    question: `一箱果汁重 6250 克，一箱牛奶比一箱果汁多重 980 克。一箱牛奶重多少克？`,
+                    correctExpression: `6250+980`,
+                    expectedResult: 6250 + 980,
+                    hint: `牛奶 = 果汁 + 差額 = 6250 + 980`,
+                    elements: generateElements([6250, 980], null, '+'),
+                    numbers: [6250, 980],
+                    operator: '+'
+                };
+            } else if (type === 'museum_visitors') {
+                // 博物館入場人數 - 兩步加法
+                const july = 5027;
+                const aug = july + 256;
+                problem = {
+                    type: 'museum_visitors',
+                    question: `博物館七月的入場人數是 ${july} 人，比八月的入場人數少 256 人。七月和八月的入場人數共有多少人？`,
+                    correctExpression: `${july}+${july}+256`,
+                    expectedResult: july + aug,
+                    hint: `八月 ${july} + 256 = ${aug} 人，七月加八月 = ${july} + ${aug}`,
+                    elements: generateElements([july, aug, 256], ['+'], null),
+                    numbers: [july, aug, 256],
+                    operators: ['+']
+                };
+            } else if (type === 'town_population') {
+                // 鎮既人口比較 - 減法（求相差）
+                problem = {
+                    type: 'town_population',
+                    question: `A 鎮有 9600 人，B 鎮有 6970 人，A 鎮比 B 鎮多多少人？`,
+                    correctExpression: `9600-6970`,
+                    expectedResult: 9600 - 6970,
+                    hint: `A鎮扣減B鎮：9600 - 6970`,
+                    elements: generateElements([9600, 6970], null, '-'),
+                    numbers: [9600, 6970],
+                    operator: '-'
+                };
+            } else if (type === 'pocket_money') {
+                // 志明零用錢 - 乘法
+                problem = {
+                    type: 'pocket_money',
+                    question: `志明每月有零用錢 380 元，他半年共有零用錢多少元？`,
+                    correctExpression: `380×6`,
+                    expectedResult: 380 * 6,
+                    hint: `半年 = 6 個月，380 × 6`,
+                    elements: generateElements([380, 6], null, '×'),
+                    numbers: [380, 6],
+                    operator: '×'
+                };
+            } else if (type === 'supermarket_juice') {
+                // 超級市場果汁 - 兩步加法
+                const orange = 4680;
+                const grape = orange + 1899;
+                const apple = grape + 1278;
+                problem = {
+                    type: 'supermarket_juice',
+                    question: `超級市場有 ${orange} 盒橙汁，比提子汁少 ${1899} 盒，蘋果汁又比提子汁多 ${1278} 盒。蘋果汁有多少盒？`,
+                    correctExpression: `${orange}+${1899}+${1278}`,
+                    expectedResult: apple,
+                    hint: `提子汁 = ${orange} + ${1899} = ${grape}，蘋果汁 = ${grape} + ${1278} = ${apple}`,
+                    elements: generateElements([orange, grape, apple], ['+'], null),
+                    numbers: [orange, grape, apple],
+                    operators: ['+']
                 };
             } else if (type === 'mixed_2step') {
                 const start = getRandom(50, 150);
