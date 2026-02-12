@@ -568,7 +568,7 @@
 
         // ==================== PROBLEM GENERATOR ====================
         function generateProblem() {
-            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step', 'big_add', 'red_packet', 'airconditioner', 'savings', 'yogurt_drink', 'farm_milk', 'fish_egg', 'walking_path', 'milk_weight', 'museum_visitors', 'town_population', 'pocket_money', 'supermarket_juice'];
+            const types = ['add_2num', 'add_3num', 'sub', 'mul', 'time_morning', 'shopping_dozencake', 'mixed_2step', 'big_add', 'red_packet', 'airconditioner', 'savings', 'yogurt_drink', 'farm_milk', 'fish_egg', 'walking_path', 'milk_weight', 'museum_visitors', 'town_population', 'pocket_money', 'supermarket_juice', 'bus_capacity', 'table_capacity', 'book_pages', 'notebook_money', 'orchard_trees', 'ticket_total', 'cookie_box', 'book_return', 'discount_buy', 'cake_discount', 'book_discount', 'fruit_discount', 'clothes_discount', 'icecream_discount', 'pen_discount', 'apple_discount', 'family_ticket', 'teacher_students', 'uncle_kids', 'mom_son_ticket', 'teacher_students2', 'grandpa_grandkids', 'teacher_classmates', 'parents_kids', 'paper_flowers', 'paper_cranes', 'pencil_case', 'milk_box', 'dumplings', 'road_repair', 'fruits_box', 'books_shelf', 'rubber_price', 'boat_people', 'chair搬運', 'apple_box', 'grocery_total', 'notebook_pen', '零件生产', 'bookcase_total', 'cards_give', 'car_truck', 'sports_players', 'cinema_seats', 'calligraphy', 'peach_box', 'boys_girls', 'math_speed', 'milk_sold', 'boys_girls2'];
             const type = types[Math.floor(Math.random() * types.length)];
             
             let problem = {};
@@ -879,10 +879,171 @@
                     question: `小明有 ${start} 粒糖果，媽媽給了他 ${add1} 粒，然後他用了 ${sub1} 粒，剩餘多少粒？`,
                     correctExpression: `${start}+${add1}-${sub1}`,
                     expectedResult: result,
-                    hint: `先加 ${add1}，再減 ${sub1}：${start} + ${add1} - ${sub1}`,
+                    hint: `先加 ${add1}，再減 ${sub1}`,
                     elements: generateElements([start, add1, sub1], ['+', '-'], null),
                     numbers: [start, add1, sub1],
                     operators: ['+', '-']
+                };
+            } else if (type === 'bus_capacity') {
+                // 大巴中巴座位問題
+                const bigBus = getRandom(30, 40);
+                const midBus = getRandom(10, 15);
+                const bigCount = 1;
+                const midCount = getRandom(2, 4);
+                const totalSeats = bigBus * bigCount + midBus * midCount;
+                problem = {
+                    type: 'bus_capacity',
+                    question: `大巴限乘 ${bigBus} 人，中巴限乘 ${midBus} 人。租 ${midCount} 輛中巴和 ${bigCount} 輛大巴，總共有多少座位？`,
+                    correctExpression: `${bigBus}×${bigCount}+${midBus}×${midCount}`,
+                    expectedResult: totalSeats,
+                    hint: `大巴 ${bigBus*bigCount}，中巴 ${midBus*midCount}`,
+                    elements: generateElements([bigBus, bigCount, midBus, midCount], ['×', '+'], null),
+                    numbers: [bigBus, bigCount, midBus, midCount],
+                    operators: ['×', '+']
+                };
+            } else if (type === 'ticket_buy') {
+                // 買票問題
+                const adultPrice = getRandom(30, 50);
+                const childPrice = getRandom(15, 25);
+                const adults = getRandom(2, 4);
+                const children = getRandom(1, 3);
+                const total = adultPrice * adults + childPrice * children;
+                problem = {
+                    type: 'ticket_buy',
+                    question: `成人票 ${adultPrice} 元，兒童票 ${childPrice} 元。${adults + children} 人去，多少元？`,
+                    correctExpression: `${adultPrice}×${adults}+${childPrice}×${children}`,
+                    expectedResult: total,
+                    hint: `成人 ${adultPrice*adults}，兒童 ${childPrice*children}`,
+                    elements: generateElements([adultPrice, adults, childPrice, children], ['×', '+'], null),
+                    numbers: [adultPrice, adults, childPrice, children],
+                    operators: ['×', '+']
+                };
+            } else if (type === 'book_return') {
+                // 還書問題
+                const total = getRandom(80, 150);
+                const borrowed = getRandom(30, 60);
+                const times = getRandom(3, 6);
+                const perTime = (total - borrowed) / times;
+                problem = {
+                    type: 'book_return',
+                    question: `圖書館有 ${total} 本書，借走 ${borrowed} 本，分 ${times} 次還，每次還多少？`,
+                    correctExpression: `(${total}-${borrowed})÷${times}`,
+                    expectedResult: perTime,
+                    hint: `剩 ${total-borrowed}，分 ${times} 次`,
+                    elements: generateElements([total, borrowed, times], ['-', '÷'], null),
+                    numbers: [total, borrowed, times],
+                    operators: ['-', '÷']
+                };
+            } else if (type === 'fruit_discount') {
+                // 水果優惠問題
+                const originalPrice = getRandom(5, 12);
+                const discountQty = getRandom(5, 10);
+                const discountPrice = originalPrice - 2;
+                problem = {
+                    type: 'fruit_discount',
+                    question: `水果每斤 ${originalPrice} 元，買 ${discountQty} 斤及以上每斤 ${discountPrice} 元。買 ${discountQty} 斤多少元？`,
+                    correctExpression: `${discountQty}×${discountPrice}`,
+                    expectedResult: discountQty * discountPrice,
+                    hint: `${discountQty} × ${discountPrice}`,
+                    elements: generateElements([discountQty, discountPrice], null, '×'),
+                    numbers: [discountQty, discountPrice],
+                    operator: '×'
+                };
+            } else if (type === 'paper_flowers') {
+                // 彩紙整花問題
+                const papers = getRandom(2, 5);
+                const perPaper = getRandom(5, 10);
+                const kids = getRandom(3, 6);
+                const perKid = Math.floor(papers * perPaper / kids);
+                problem = {
+                    type: 'paper_flowers',
+                    question: `${papers} 張彩紙，每張做 ${perPaper} 朵花。分給 ${kids} 個小朋友，每人幾朵？`,
+                    correctExpression: `${papers}×${perPaper}÷${kids}`,
+                    expectedResult: perKid,
+                    hint: `總 ${papers*perPaper} 朵，分 ${kids} 人`,
+                    elements: generateElements([papers, perPaper, kids], ['×', '÷'], null),
+                    numbers: [papers, perPaper, kids],
+                    operators: ['×', '÷']
+                };
+            } else if (type === 'milk_box') {
+                // 牛奶問題
+                const perBox = getRandom(6, 12);
+                const perClass = getRandom(4, 8);
+                const classes = getRandom(3, 6);
+                const total = perBox * perClass * classes;
+                problem = {
+                    type: 'milk_box',
+                    question: `每箱 ${perBox} 盒。${classes} 班每班 ${perClass} 盒。共需多少盒？`,
+                    correctExpression: `${perBox}×${perClass}×${classes}`,
+                    expectedResult: total,
+                    hint: `${perBox} × ${perClass} × ${classes}`,
+                    elements: generateElements([perBox, perClass, classes], ['×', '×'], null),
+                    numbers: [perBox, perClass, classes],
+                    operators: ['×', '×']
+                };
+            } else if (type === 'fruits_box') {
+                // 水果分發問題
+                const classes = getRandom(4, 8);
+                const perClass = getRandom(5, 10);
+                const perBox = getRandom(8, 15);
+                const total = classes * perClass * perBox;
+                problem = {
+                    type: 'fruits_box',
+                    question: `${classes} 班每班 ${perClass} 筐，每筐 ${perBox} 個。共多少個？`,
+                    correctExpression: `${classes}×${perClass}×${perBox}`,
+                    expectedResult: total,
+                    hint: `${classes} × ${perClass} × ${perBox}`,
+                    elements: generateElements([classes, perClass, perBox], ['×', '×'], null),
+                    numbers: [classes, perClass, perBox],
+                    operators: ['×', '×']
+                };
+            } else if (type === 'rubber_price') {
+                // 橡皮價錢問題
+                const price = getRandom(2, 5);
+                const qty1 = getRandom(5, 12);
+                const qty2 = getRandom(3, qty1 - 1);
+                const diff = (qty1 - qty2) * price;
+                problem = {
+                    type: 'rubber_price',
+                    question: `橡皮每塊 ${price} 元。第一組 ${qty1} 塊，第二組 ${qty2} 塊。第一組多花多少？`,
+                    correctExpression: `(${qty1}-${qty2})×${price}`,
+                    expectedResult: diff,
+                    hint: `多 ${qty1-qty2} 塊`,
+                    elements: generateElements([qty1, qty2, price], ['-', '×'], null),
+                    numbers: [qty1, qty2, price],
+                    operators: ['-', '×']
+                };
+            } else if (type === 'boat_people') {
+                // 船人數問題
+                const perBoat = getRandom(4, 8);
+                const boyBoats = getRandom(3, 6);
+                const girlBoats = getRandom(4, 7);
+                const total = perBoat * boyBoats + perBoat * girlBoats;
+                problem = {
+                    type: 'boat_people',
+                    question: `每船 ${perBoat} 人。男生 ${boyBoats} 船，女生 ${girlBoats} 船。共多少人？`,
+                    correctExpression: `${perBoat}×${boyBoats}+${perBoat}×${girlBoats}`,
+                    expectedResult: total,
+                    hint: `男 ${perBoat*boyBoats}，女 ${perBoat*girlBoats}`,
+                    elements: generateElements([perBoat, boyBoats, girlBoats], ['×', '+', '×'], null),
+                    numbers: [perBoat, boyBoats, girlBoats],
+                    operators: ['×', '+', '×']
+                };
+            } else if (type === 'cinema_seats') {
+                // 電影院座位問題
+                const rows = getRandom(6, 12);
+                const perRow = getRandom(8, 15);
+                const sold = getRandom(20, 50);
+                const remaining = rows * perRow - sold;
+                problem = {
+                    type: 'cinema_seats',
+                    question: `電影院 ${rows} 排，每排 ${perRow} 座位。賣 ${sold} 張，剩幾張？`,
+                    correctExpression: `${rows}×${perRow}-${sold}`,
+                    expectedResult: remaining,
+                    hint: `總 ${rows*perRow}，減 ${sold}`,
+                    elements: generateElements([rows, perRow, sold], ['×', '-'], null),
+                    numbers: [rows, perRow, sold],
+                    operators: ['×', '-']
                 };
             }
             
