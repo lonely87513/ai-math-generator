@@ -603,8 +603,10 @@
                     operators: ['+', '+']
                 };
             } else if (type === 'sub') {
-                const a = getRandom(50, 150);
-                const b = getRandom(20, 60);
+                const pickA = getRandom(50, 150);
+                const pickB = getRandom(20, 60);
+                // 確保 a > b 避免結果為負數
+                const [a, b] = pickA > pickB ? [pickA, pickB] : [pickB, pickA];
                 const result = a - b;
                 problem = {
                     type: 'sub',
@@ -873,7 +875,8 @@
             } else if (type === 'mixed_2step') {
                 const start = getRandom(50, 150);
                 const add1 = getRandom(20, 60);
-                const sub1 = getRandom(15, 50);
+                // 確保 start + add1 - sub1 > 0 (結果非負)
+                const sub1 = getRandom(15, Math.min(50, start + add1 - 10));
                 const result = start + add1 - sub1;
                 problem = {
                     type: 'mixed_2step',
@@ -956,9 +959,14 @@
             } else if (type === 'paper_flowers') {
                 // 彩紙整花問題
                 const papers = getRandom(2, 5);
-                const perPaper = getRandom(5, 10);
                 const kids = getRandom(3, 6);
-                const perKid = Math.floor(papers * perPaper / kids);
+                // 確保 papers × perPaper 係 kids 嘅正倍數，令 perKid 為整數
+                const validPerPapers = [];
+                for (let p = 5; p <= 10; p++) {
+                    if ((papers * p) % kids === 0) validPerPapers.push(p);
+                }
+                const perPaper = validPerPapers[Math.floor(Math.random() * validPerPapers.length)];
+                const perKid = papers * perPaper / kids;
                 problem = {
                     type: 'paper_flowers',
                     question: `${papers} 張彩紙，每張做 ${perPaper} 朵花。分給 ${kids} 個小朋友，每人幾朵？`,
@@ -1085,8 +1093,9 @@
             
             // 加入干擾項 - 錯誤運算符號
             const allOps = ['+', '-', '×', '÷'];
-            let correctOp = singleOp || (operators ? operators[0] : '+');
-            const wrongOps = allOps.filter(o => o !== correctOp);
+            // 過濾掉所有正確運算符（去重），避免產生重複嘅正確運算符作為干擾項
+            const correctOps = singleOp ? [singleOp] : Array.from(new Set(operators || ['+']));
+            const wrongOps = allOps.filter(o => !correctOps.includes(o));
             wrongOps.slice(0, 2).forEach(op => {
                 elements.push({ type: 'distractor', value: op, label: op, correct: false });
             });
@@ -1162,6 +1171,13 @@
                 div.dataset.index = index;
                 div.textContent = el.label;
                 
+                // 根據 workspace 狀態標記已用過嘅元素（防止重複拖拽）
+                const isUsed = state.workspace.some(w => w.sourceIndex === index);
+                if (isUsed) {
+                    div.classList.add('used');
+                    div.draggable = false;
+                }
+                
                 div.ondragstart = dragStart;
                 div.ontouchstart = touchStart;
                 
@@ -1216,6 +1232,7 @@
                 value: state.workspace[index].value,
                 label: state.workspace[index].label,
                 index: index,
+                sourceIndex: state.workspace[index].sourceIndex,
                 from: 'workspace'
             };
         }
@@ -1241,11 +1258,13 @@
             const isWorkspace = target.closest('#workspace') !== null;
             const rect = target.getBoundingClientRect();
             
+            const wsIdx = target.dataset.workspaceIndex !== undefined ? parseInt(target.dataset.workspaceIndex) : 0;
+            const elIdx = target.dataset.index !== undefined ? parseInt(target.dataset.index) : wsIdx;
             draggedElement = {
                 value: target.dataset.value,
                 label: target.dataset.label,
-                index: target.dataset.index !== undefined ? parseInt(target.dataset.index) : 
-                       target.dataset.workspaceIndex !== undefined ? parseInt(target.dataset.workspaceIndex) : 0,
+                index: isWorkspace ? wsIdx : elIdx,
+                sourceIndex: isWorkspace ? (state.workspace[wsIdx] ? state.workspace[wsIdx].sourceIndex : elIdx) : elIdx,
                 from: isWorkspace ? 'workspace' : 'elements'
             };
             
@@ -1341,7 +1360,8 @@
             if (el && !target.classList.contains('used')) {
                 state.workspace.push({
                     value: el.value,
-                    label: el.label
+                    label: el.label,
+                    sourceIndex: index
                 });
                 renderElements();
                 renderWorkspace();
@@ -1373,13 +1393,15 @@
             if (draggedElement.from === 'elements') {
                 state.workspace.push({
                     value: draggedElement.value,
-                    label: draggedElement.label
+                    label: draggedElement.label,
+                    sourceIndex: draggedElement.index
                 });
             } else if (draggedElement.from === 'workspace') {
                 state.workspace.splice(draggedElement.index, 1);
                 state.workspace.push({
                     value: draggedElement.value,
-                    label: draggedElement.label
+                    label: draggedElement.label,
+                    sourceIndex: draggedElement.sourceIndex
                 });
             }
             
@@ -1407,23 +1429,8 @@
         }
 
         function removeFromWorkspace(index) {
-            const removed = state.workspace[index];
-            
-            // Remove from workspace
+            // 從 workspace 移除；renderElements 會根據更新後嘅 workspace 自動重新標記 used 狀態
             state.workspace.splice(index, 1);
-            
-            // Unmark the original element
-            const originalIndex = state.currentProblem.elements.findIndex(
-                el => el.value == removed.value && el.label == removed.label && el.correct
-            );
-            
-            if (originalIndex !== -1) {
-                const elements = document.querySelectorAll('.drag-element');
-                if (elements[originalIndex]) {
-                    elements[originalIndex].classList.remove('used');
-                    elements[originalIndex].draggable = true;
-                }
-            }
             
             renderWorkspace();
             renderElements();
