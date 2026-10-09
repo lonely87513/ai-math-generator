@@ -598,9 +598,9 @@
                     correctExpression: `${a}+${b}+${c}`,
                     expectedResult: result,
                     hint: `三個數相加：${a} + ${b} + ${c}`,
-                    elements: generateElements([a, b, c], null, '+'),
+                    elements: generateElements([a, b, c], ['+', '+'], null),
                     numbers: [a, b, c],
-                    operator: '+'
+                    operators: ['+', '+']
                 };
             } else if (type === 'sub') {
                 const a = getRandom(50, 150);
@@ -651,15 +651,16 @@
                 }
                 
                 const result = morning + afternoon;
+                const operators = isAfternoonLess ? ['+', '-'] : ['+', '+'];
                 problem = {
                     type: 'time_add',
                     question: question,
                     correctExpression: expression,
                     expectedResult: result,
                     hint: `早上 ${morning} 個，下午 ${afternoon} 個`,
-                    elements: generateElements([morning, afternoon, diff], ['+'], null),
-                    numbers: [morning, afternoon, diff],
-                    operators: ['+']
+                    elements: generateElements([morning, morning, afternoon, diff], operators, null),
+                    numbers: [morning, morning, afternoon, diff],
+                    operators: operators
                 };
             } else if (type === 'shopping_dozencake') {
                 const cake = getRandom(5, 20);
@@ -712,9 +713,9 @@
                     correctExpression: `${original}-${discount1}-${discount2}`,
                     expectedResult: original - discount1 - discount2,
                     hint: `先減 ${discount1}，再減 ${discount2}：${original} - ${discount1} - ${discount2}`,
-                    elements: generateElements([original, discount1, discount2], ['-'], null),
+                    elements: generateElements([original, discount1, discount2], ['-', '-'], null),
                     numbers: [original, discount1, discount2],
-                    operators: ['-']
+                    operators: ['-', '-']
                 };
             } else if (type === 'savings') {
                 // 儲蓄問題 - 兩步加法
@@ -726,9 +727,9 @@
                     correctExpression: `${liheng}+${liheng}+${2407}`,
                     expectedResult: liheng + jing,
                     hint: `靜兒有 ${liheng} + ${2407} = ${jing} 元，再加立行既 ${liheng}`,
-                    elements: generateElements([liheng, 2407], null, '+'),
-                    numbers: [liheng, jing, 2407],
-                    operator: '+'
+                    elements: generateElements([liheng, liheng, 2407], ['+', '+'], null),
+                    numbers: [liheng, liheng, 2407],
+                    operators: ['+', '+']
                 };
             } else if (type === 'yogurt_drink') {
                 // 乳酸菌飲品 - 乘法 (2打固定)
@@ -770,11 +771,11 @@
                 problem = {
                     type: 'fish_egg',
                     question: `李老師買了 ${total} 粒魚蛋，他把每 ${perGroup} 粒魚蛋分成一串，然後把串好的魚蛋平均分給 ${students} 個同學，每人可分得魚蛋多少粒？`,
-                    correctExpression: `${total}÷${perGroup}÷${students}`,
-                    expectedResult: Math.floor(total / perGroup / students),
-                    hint: `先 ${total} ÷ ${perGroup} = ${group * students} 串，再 ${group * students} ÷ ${students} = ${group} 粒`,
-                    elements: generateElements([total, perGroup, students], ['÷'], null),
-                    numbers: [total, perGroup, students],
+                    correctExpression: `${total}÷${students}`,
+                    expectedResult: group * perGroup,
+                    hint: `先 ${total} ÷ ${students} = ${group * perGroup} 粒（即每人 ${group} 串 × 每串 ${perGroup} 粒）`,
+                    elements: generateElements([total, students], ['÷'], null),
+                    numbers: [total, students],
                     operators: ['÷']
                 };
             } else if (type === 'walking_path') {
@@ -818,9 +819,9 @@
                     correctExpression: `${july}+${july}+${diff}`,
                     expectedResult: july + aug,
                     hint: `八月 ${july} + ${diff} = ${aug} 人，七月加八月 = ${july} + ${aug}`,
-                    elements: generateElements([july, aug, diff], ['+'], null),
-                    numbers: [july, aug, diff],
-                    operators: ['+']
+                    elements: generateElements([july, july, aug, diff], ['+', '+'], null),
+                    numbers: [july, july, aug, diff],
+                    operators: ['+', '+']
                 };
             } else if (type === 'town_population') {
                 // 鎮既人口比較 - 減法（求相差）
@@ -865,9 +866,9 @@
                     correctExpression: `${orange}+${diff1}+${diff2}`,
                     expectedResult: apple,
                     hint: `提子汁 = ${orange} + ${diff1} = ${grape}，蘋果汁 = ${grape} + ${diff2} = ${apple}`,
-                    elements: generateElements([orange, grape, diff2], ['+'], null),
-                    numbers: [orange, grape, diff2],
-                    operators: ['+']
+                    elements: generateElements([orange, diff1, grape, diff2], ['+', '+'], null),
+                    numbers: [orange, diff1, grape, diff2],
+                    operators: ['+', '+']
                 };
             } else if (type === 'mixed_2step') {
                 const start = getRandom(50, 150);
@@ -897,9 +898,9 @@
                     correctExpression: `${bigBus}×${bigCount}+${midBus}×${midCount}`,
                     expectedResult: totalSeats,
                     hint: `大巴 ${bigBus*bigCount}，中巴 ${midBus*midCount}`,
-                    elements: generateElements([bigBus, bigCount, midBus, midCount], ['×', '+'], null),
+                    elements: generateElements([bigBus, bigCount, midBus, midCount], ['×', '+', '×'], null),
                     numbers: [bigBus, bigCount, midBus, midCount],
-                    operators: ['×', '+']
+                    operators: ['×', '+', '×']
                 };
             } else if (type === 'ticket_buy') {
                 // 買票問題
@@ -914,16 +915,19 @@
                     correctExpression: `${adultPrice}×${adults}+${childPrice}×${children}`,
                     expectedResult: total,
                     hint: `成人 ${adultPrice*adults}，兒童 ${childPrice*children}`,
-                    elements: generateElements([adultPrice, adults, childPrice, children], ['×', '+'], null),
+                    elements: generateElements([adultPrice, adults, childPrice, children], ['×', '+', '×'], null),
                     numbers: [adultPrice, adults, childPrice, children],
-                    operators: ['×', '+']
+                    operators: ['×', '+', '×']
                 };
             } else if (type === 'book_return') {
                 // 還書問題
                 const total = getRandom(80, 150);
-                const borrowed = getRandom(30, 60);
                 const times = getRandom(3, 6);
-                const perTime = (total - borrowed) / times;
+                // 確保 (total - borrowed) 係 times 嘅正倍數，令 perTime 為整數
+                const minPerTime = Math.max(1, Math.ceil((total - 60) / times));
+                const maxPerTime = Math.floor((total - 30) / times);
+                const perTime = getRandom(minPerTime, maxPerTime);
+                const borrowed = total - perTime * times;
                 problem = {
                     type: 'book_return',
                     question: `圖書館有 ${total} 本書，借走 ${borrowed} 本，分 ${times} 次還，每次還多少？`,
@@ -1025,8 +1029,8 @@
                     correctExpression: `${perBoat}×${boyBoats}+${perBoat}×${girlBoats}`,
                     expectedResult: total,
                     hint: `男 ${perBoat*boyBoats}，女 ${perBoat*girlBoats}`,
-                    elements: generateElements([perBoat, boyBoats, girlBoats], ['×', '+', '×'], null),
-                    numbers: [perBoat, boyBoats, girlBoats],
+                    elements: generateElements([perBoat, perBoat, boyBoats, girlBoats], ['×', '+', '×'], null),
+                    numbers: [perBoat, perBoat, boyBoats, girlBoats],
                     operators: ['×', '+', '×']
                 };
             } else if (type === 'cinema_seats') {
