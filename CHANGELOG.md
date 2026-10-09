@@ -1,5 +1,41 @@
 # 📝 AI Math Generator - 更新日誌
 
+## v1.5 (2026-10-09)
+### 🐛 程式修正
+- 修正 16 個 functional bugs（11 Critical/High + 5 Medium/Low）
+- 主要 pattern：9 個題目嘅 standard expression 元素數量不匹配，導致用戶無法建構正確表達式
+
+### ✨ UX 改善
+- 已用過嘅拖曳元素現在會**變暗 + 不可重複拖曳**（修正 #15 — CSS 早已定義但從未應用）
+- 拖曳同一個元素重複用嘅問題已修正
+- 干擾運算符不再包含正確運算符（修正 #16 — 之前會出現重複嘅正確符號 tile）
+
+### 📚 修正詳情
+| 編號 | 嚴重程度 | 題目 / 問題 | 修正內容 |
+|------|---------|------------|---------|
+| #1 | 🔴 Critical | 魚蛋分俾同學 | 答案計算修正（粒 vs 串混淆） |
+| #2 | 🔴 Critical | 冷氣機優惠 | 補返缺少嘅減號運算符 |
+| #3 | 🔴 Critical | 儲蓄問題 | 補返 `liheng` 第二個 + 第二個 `+` 號 |
+| #4 | 🔴 Critical | 大巴中巴座位 | 補返第二個 `×` 號 |
+| #5 | 🔴 Critical | 買票問題 | 補返第二個 `×` 號 |
+| #6 | 🔴 Critical | 船運人數 | 補返 `perBoat` 第二個 |
+| #7 | 🔴 Critical | 三個數加 | `singleOp` 改為 `operators: ['+', '+']` |
+| #8 | 🟠 High | 下午時間題 | 補返 `morning` 第二個到 elements |
+| #9 | 🟠 High | 博物館人流 | 補返 `july` 第二個到 elements |
+| #10 | 🟠 High | 超級市場果汁 | 補返 `diff1` 到 elements |
+| #11 | 🟠 High | 還書問題 | 確保 `(總數-借走)` 係 `次數` 嘅正整數倍 |
+| #12 | 🟡 Medium | 簡單減法 | 確保 `a > b` 避免負數結果 |
+| #13 | 🟡 Medium | 兩步運算 | 防禦性修正，避免未來 range 改動引入負數 |
+| #14 | 🟡 Medium | 彩紙整花 | 確保 `papers × perPaper` 係 `kids` 嘅整倍數 |
+| #15 | 🟡 Medium | 拖曳 used class | 終於正確應用 `.used` 狀態（UX 改進） |
+| #16 | 🟢 Low | generateElements 干擾項 | 過濾掉全部正確運算符（去重） |
+
+### 🧪 驗證
+- 10000 次 random simulation 全部通過（100%）：所有 30 種題目類型
+- 零回歸
+
+---
+
 ## v1.4 (2026-02-12)
 ### ✨ 新功能
 - 新增 10 種應用題類型（來自 50_math_problems.md）
